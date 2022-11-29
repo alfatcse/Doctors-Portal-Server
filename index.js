@@ -15,12 +15,25 @@ async function run() {
     try {
         const appointmentOptionCollection=client.db('doctorsPortal').collection('appointmentOptions');
         const bookingsCollection=client.db('doctorsPortal').collection('bookings');
+        //use Aggregate to query multiple collection and then merge data
         app.get('/appointmentOptions',async(req,res)=>{
+            const date=req.query.date;
+            console.log(date);
             const query={};
             const options=await appointmentOptionCollection.find(query).toArray();
+            const bookingQuery={AppointmentDate:date};
+            const alreadyBooked=await bookingsCollection.find(bookingQuery).toArray();
+            options.forEach(option=>{
+                const optionBooked=alreadyBooked.filter(book=>book.treatment===option.name);
+                const bookedSlots=optionBooked.map(book=>book.slot);
+                const remainingSlots=option.slots.filter(slot=>!bookedSlots.includes(slot));
+                option.slots=remainingSlots;
+                console.log(option.name,bookedSlots,remainingSlots.length);
+            })
             res.send(options);
-
+            
         })
+
         /*
         API Naming Convention::
         1.app.get('/bookings')
@@ -30,8 +43,18 @@ async function run() {
         */
         app.post('/bookings',async(req,res)=>{
             const booking=req.body;
-            console.log(booking);
+            const query={
+                AppointmentDate:booking.AppointmentDate,
+                treatment:booking.treatment,
+                email:booking.email
+            }
+            const alreadyBooked=await bookingsCollection.find(query).toArray();
+            if(alreadyBooked.length){
+                const message=`You have already a booking on ${booking.AppointmentDate}`;
+                return res.send({acknowledged:false,message});
+            }
             const result=await bookingsCollection.insertOne(booking);
+
             res.send(result);
         })
      } finally {

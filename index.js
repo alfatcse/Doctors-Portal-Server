@@ -12,6 +12,23 @@ app.get('/', async (req, res) => {
 })
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.icjdeya.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+function verifyJWT(req, res, next) {
+   // console.log(req.headers.authorization);
+    const authheader = req.headers.authorization;
+    if (!authheader) {
+        return res.status(401).send('Unauthorized Accesss now');
+    }
+    const token = authheader.split(' ')[1];
+   // console.log('token',token);
+    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded) {
+        if (err) {
+            console.log(err);
+            return res.status(403).send({ message: err });
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
 async function run() {
     try {
         const appointmentOptionCollection = client.db('doctorsPortal').collection('appointmentOptions');
@@ -43,10 +60,15 @@ async function run() {
         3.app.post('booking')
         4.app.post('/booking/:id')
         */
-        app.get('/booking', async (req, res) => {
+        app.get('/booking', verifyJWT, async (req, res) => {
             const email = req.query.email;
-            const query={email:email};
-            const booking=await bookingsCollection.find(query).toArray();
+            const decodedEmail = req.decoded.email;
+            console.log('de',decodedEmail);
+            if (email !== decodedEmail) {
+                return res.status(403).send({ message: 'Forbidden nh Access' })
+            }
+            const query = { email: email };
+            const booking = await bookingsCollection.find(query).toArray();
             res.send(booking);
         })
         app.post('/bookings', async (req, res) => {
@@ -65,19 +87,19 @@ async function run() {
 
             res.send(result);
         })
-        app.get('/jwt',async(req,res)=>{
-            const email=req.query.email;
-            const query={email:email};
-            const user=await userCollection.findOne(query);
-            if(user){
-                const token=jwt.sign({email},process.env.ACCESS_TOKEN,{expiresIn:'1h'});
-                return res.send({accessToken:token})
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '10h' });
+                return res.send({ accessToken: token })
             }
-            res.status(403).send({accessToken:'No token'});
+            res.status(403).send({ accessToken: 'No token' });
         })
-        app.post('/users',async(req,res)=>{
-            const user=req.body;
-            const result=await userCollection.insertOne(user);
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
             res.send(result);
         })
     } finally {

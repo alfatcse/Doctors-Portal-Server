@@ -50,7 +50,6 @@ async function run() {
                 console.log(option.name, bookedSlots, remainingSlots.length);
             })
             res.send(options);
-
         })
 
         /*
@@ -87,12 +86,17 @@ async function run() {
 
             res.send(result);
         })
+        app.get('/users',async(req,res)=>{
+            const query={};
+            const users=await userCollection.find(query).toArray();
+            res.send(users);
+        })
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
             const user = await userCollection.findOne(query);
             if (user) {
-                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '10h' });
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
                 return res.send({ accessToken: token })
             }
             res.status(403).send({ accessToken: 'No token' });

@@ -5,6 +5,7 @@ require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5006;
 const app = express();
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 app.use(cors());
 app.use(express.json());
 app.get('/', async (req, res) => {
@@ -35,6 +36,7 @@ async function run() {
         const bookingsCollection = client.db('doctorsPortal').collection('bookings');
         const userCollection = client.db('doctorsPortal').collection('users');
         const doctorsCollection = client.db('doctorsPortal').collection('doctors');
+        const paymentCollection = client.db('doctorsPortal').collection('payment');
         //make you use verifyAdmin after checking JWT
         const verifyAdmin = async(req, res, next) => {
             console.log('inside:::', req.decoded.email);
@@ -108,7 +110,23 @@ async function run() {
             const result = await appointmentOptionCollection.find(query).project({ name: 1 }).toArray();
             res.send(result);
         })
-
+        app.get('/addprice',async(req,res)=>{
+            const filter={}
+            const option={upsert:true}
+            const updateDoc={
+                $set:{
+                    price:99
+                }
+            }
+            const result=await appointmentOptionCollection.updateMany(filter,updateDoc,option);
+            res.send(result);
+        })
+        app.get('/booking/:id',async(req,res)=>{
+            const id=req.params.id;
+            const query={_id:ObjectId(id)};
+            const booking=await bookingsCollection.findOne(query);
+            res.send(booking);
+        })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             const query = {
@@ -130,7 +148,38 @@ async function run() {
             const result = await userCollection.insertOne(user);
             res.send(result);
         })
+        app.post('/create-payment-intent',async(req,res)=>{
+            const booking=req.body;
+            const price=booking.price;
+            const amount=price*100;
+            const paymentIntent=await stripe.paymentIntents.create({
+                currency:'usd',
+                amount:amount,
+                "payment_method_types":[
+                    "card"
+                ],
+            })
+            res.send({
+                clientSecret:paymentIntent.client_secret,
+            })
+        })
+        app.post('/payment',async(req,res)=>{
+            const payment=req.body;
+            const result=await paymentCollection.insertOne(payment);
+            const id=payment.bookingID;
+            console.log('booking',id);
+            const filter={_id:ObjectId(id)};
+            const updateDoc={
+                $set:{
+                    paid:true,
+                    transactionId:payment.transactionId
+                }
+            }
+            const option={upsert:true}
+            const updateResult=await bookingsCollection.updateOne(filter,updateDoc,option);
 
+            res.send(result);
+        })
         app.put('/users/admin/:id', verifyJWT, verifyAdmin,async (req, res) => {
             // const decodedEmail = req.decoded.email;
             // const query = { email: decodedEmail };

@@ -34,7 +34,7 @@ async function run() {
         const appointmentOptionCollection = client.db('doctorsPortal').collection('appointmentOptions');
         const bookingsCollection = client.db('doctorsPortal').collection('bookings');
         const userCollection = client.db('doctorsPortal').collection('users');
-        const doctorsCollection=client.db('doctorsPortal').collection('doctors');
+        const doctorsCollection = client.db('doctorsPortal').collection('doctors');
         //use Aggregate to query multiple collection and then merge data
         app.get('/appointmentOptions', async (req, res) => {
             const date = req.query.date;
@@ -71,11 +71,11 @@ async function run() {
             const booking = await bookingsCollection.find(query).toArray();
             res.send(booking);
         })
-        app.get('/users/admin/:email',async(req,res)=>{
-            const email=req.params.email;
-            const query={email};
-            const user=await userCollection.findOne(query);
-            res.send({isAdmin:user?.role==='admin'});
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = await userCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
         })
         app.get('/users', async (req, res) => {
             const query = {};
@@ -92,14 +92,14 @@ async function run() {
             }
             res.status(403).send({ accessToken: 'No token' });
         })
-        app.get('/appointmentSpecialty',async(req,res)=>{
-            const query={};
-            const result=await appointmentOptionCollection.find(query).project({name:1}).toArray();
+        app.get('/appointmentSpecialty', async (req, res) => {
+            const query = {};
+            const result = await appointmentOptionCollection.find(query).project({ name: 1 }).toArray();
             res.send(result);
         })
-        app.get('/doctors',async(req,res)=>{
-            const query={};
-            const doctors=await doctorsCollection.find(query).toArray();
+        app.get('/doctors', async (req, res) => {
+            const query = {};
+            const doctors = await doctorsCollection.find(query).toArray();
             res.send(doctors);
         })
         app.post('/bookings', async (req, res) => {
@@ -123,9 +123,9 @@ async function run() {
             const result = await userCollection.insertOne(user);
             res.send(result);
         })
-        app.post('/doctors',async(req,res)=>{
-            const doctor=req.body;
-            const result=await doctorsCollection.insertOne(doctor);
+        app.post('/doctors', async (req, res) => {
+            const doctor = req.body;
+            const result = await doctorsCollection.insertOne(doctor);
             res.send(result);
         })
         app.put('/users/admin/:id', verifyJWT, async (req, res) => {
@@ -144,6 +144,12 @@ async function run() {
                 }
             }
             const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+        app.delete('/doctors/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter={_id:ObjectId(id)};
+            const result =await doctorsCollection.deleteOne(filter);
             res.send(result);
         })
     } finally {

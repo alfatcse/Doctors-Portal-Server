@@ -208,6 +208,7 @@ async function run() {
                 clientSecret: paymentIntent.client_secret,
             })
         })
+        //Payment method
         app.post('/payment', async (req, res) => {
             const payment = req.body;
             const result = await paymentCollection.insertOne(payment);

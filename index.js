@@ -171,6 +171,13 @@ async function run() {
             const booking = await bookingsCollection.findOne(query);
             res.send(booking);
         })
+        app.get('/useremail',async(req,res)=>{
+            const email=req.query.email;
+            console.log('emmmm:',email);
+            const user=await userCollection.findOne({email});
+            console.log(user);
+            res.send(user);
+        })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             const query = {
@@ -223,7 +230,6 @@ async function run() {
             }
             const option = { upsert: true }
             const updateResult = await bookingsCollection.updateOne(filter, updateDoc, option);
-
             res.send(result);
         })
         app.put('/users/admin/:id', verifyJWT, verifyAdmin, async (req, res) => {

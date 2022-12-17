@@ -103,7 +103,7 @@ async function run() {
                 const bookedSlots = optionBooked.map(book => book.slot);
                 const remainingSlots = option.slots.filter(slot => !bookedSlots.includes(slot));
                 option.slots = remainingSlots;
-                console.log(option.name, bookedSlots, remainingSlots.length);
+               // console.log(option.name, bookedSlots, remainingSlots.length);
             })
             res.send(options);
         })
@@ -132,7 +132,8 @@ async function run() {
             const email = req.params.email;
             const query = { email };
             const user = await userCollection.findOne(query);
-            res.send({ isAdmin: user?.role === 'admin' });
+          //  console.log('role',user.role);
+            res.send(user);
         })
         app.get('/users', async (req, res) => {
             const query = {};
@@ -173,10 +174,15 @@ async function run() {
         })
         app.get('/useremail',async(req,res)=>{
             const email=req.query.email;
-            console.log('emmmm:',email);
             const user=await userCollection.findOne({email});
-            console.log(user);
+            //console.log(user);
             res.send(user);
+        })
+        app.post('/addslot',async(req,res)=>{
+            const slotdata=req.body;
+            console.log('slotData',slotdata);
+            const result=await appointmentOptionCollection.insertOne(slotdata);
+            res.send(result);
         })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;

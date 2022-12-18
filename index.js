@@ -79,6 +79,7 @@ async function run() {
         const userCollection = client.db('doctorsPortal').collection('users');
         const doctorsCollection = client.db('doctorsPortal').collection('doctors');
         const paymentCollection = client.db('doctorsPortal').collection('payment');
+        const slotCollection = client.db('doctorsPortal').collection('slot');
         //make you use verifyAdmin after checking JWT
         const verifyAdmin = async (req, res, next) => {
             console.log('inside:::', req.decoded.email);
@@ -103,7 +104,7 @@ async function run() {
                 const bookedSlots = optionBooked.map(book => book.slot);
                 const remainingSlots = option.slots.filter(slot => !bookedSlots.includes(slot));
                 option.slots = remainingSlots;
-               // console.log(option.name, bookedSlots, remainingSlots.length);
+                // console.log(option.name, bookedSlots, remainingSlots.length);
             })
             res.send(options);
         })
@@ -132,7 +133,7 @@ async function run() {
             const email = req.params.email;
             const query = { email };
             const user = await userCollection.findOne(query);
-          //  console.log('role',user.role);
+            //  console.log('role',user.role);
             res.send(user);
         })
         app.get('/users', async (req, res) => {
@@ -172,17 +173,11 @@ async function run() {
             const booking = await bookingsCollection.findOne(query);
             res.send(booking);
         })
-        app.get('/useremail',async(req,res)=>{
-            const email=req.query.email;
-            const user=await userCollection.findOne({email});
+        app.get('/useremail', async (req, res) => {
+            const email = req.query.email;
+            const user = await userCollection.findOne({ email });
             //console.log(user);
             res.send(user);
-        })
-        app.post('/addslot',async(req,res)=>{
-            const slotdata=req.body;
-            console.log('slotData',slotdata);
-            const result=await appointmentOptionCollection.insertOne(slotdata);
-            res.send(result);
         })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
@@ -255,6 +250,80 @@ async function run() {
             }
             const result = await userCollection.updateOne(filter, updateDoc, options);
             res.send(result);
+        })
+        app.put('/addslot/:serviceName', async (req, res) => {
+
+            const slotdata = req.body;
+            console.log("slot data",slotdata)
+            let email = '';
+            let name = '';
+            let price = '';
+            let sw = [];
+            slotdata.doctorDetail.map(e => {
+                email = e.docEmail;
+                sw = e.slots;
+                name = e.docName;
+                price = e.price;
+                console.log('sss', sw);
+            })
+            console.log('emmm', email);
+            const q = {
+                serviceName: slotdata.serviceName
+            }
+            const r = await slotCollection.findOne(q);
+            console.log("query data", r)
+            if (r) {
+                r.doctorDetail.map(async (s) => {
+                    const em = s.docEmail;
+                    if (em === email) {
+                        
+                        console.log('hellll');
+                        const options = { upsert: true };
+                        const updateDoc = {
+
+                        }
+                        
+
+                       
+                    }
+                })
+                const options = { upsert: true };
+                const result = await slotCollection.updateOne({ _id: r._id }, {
+                    $push: {
+                        doctorDetail: {
+                            docEmail: email,
+                            docName: name,
+                            price: price,
+                            slots: sw
+                        }
+                    }
+                }, options)
+                console.log('not same', result);
+                res.send(result);
+            }
+            else {
+                const result = await slotCollection.insertOne(slotdata);
+                res.send(result);
+            }
+
+            console.log("params",req.params.serviceName);
+            console.log('body',req.body);
+            // const slotName = await slotCollection.findOne({ serviceName: req.params.serviceName });
+            // const r = req.params;
+            // console.log(req.body.doctorDetail[0].docEmail);
+            // if (slotName) {
+            //     const t = slotName.doctorDetail.map(item => {
+            //         if (item.email === req.body.doctorDetail[0].docEmail) {
+            //             console.log('has')
+            //         }
+            //     }
+            //     )
+
+
+            // }
+
+
+
         })
         app.post('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const doctor = req.body;

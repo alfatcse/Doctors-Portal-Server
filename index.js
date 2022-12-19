@@ -4,14 +4,35 @@ const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const http = require("http");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5006;
 const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 app.use(cors());
 app.use(express.json());
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
 app.get('/', async (req, res) => {
     res.send('Doctors Portal Server Running');
+})
+io.on("connection", (socket) => {
+    socket.emit("me", socket.id)
+    console.log(socket.id);
+    socket.on("disconnect", () => {
+        socket.broadcast.emit("callEnded")
+    })
+    socket.on("callUser", (data) => {
+        io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+    })
+    socket.on("answerCall", (data) => {
+        io.to(data.to).emit("callAccepted", data.signal)
+    })
 })
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.icjdeya.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -133,7 +154,7 @@ async function run() {
             const email = req.params.email;
             const query = { email };
             const user = await userCollection.findOne(query);
-            //  console.log('role',user.role);
+            console.log('role', user.role);
             res.send(user);
         })
         app.get('/users', async (req, res) => {
@@ -141,6 +162,7 @@ async function run() {
             const users = await userCollection.find(query).toArray();
             res.send(users);
         })
+
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
@@ -178,6 +200,13 @@ async function run() {
             const user = await userCollection.findOne({ email });
             //console.log(user);
             res.send(user);
+        })
+        app.get('/bookingpatient/:specialty', async (req, res) => {
+            const s = req.params.specialty;
+            console.log('ss', s);
+            const allPatient = await bookingsCollection.find({ treatment: s }).toArray();
+            console.log(allPatient);
+            res.send(allPatient)
         })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
@@ -252,9 +281,7 @@ async function run() {
             res.send(result);
         })
         app.put('/addslot/:serviceName', async (req, res) => {
-
             const slotdata = req.body;
-            console.log("slot data",slotdata)
             let email = '';
             let name = '';
             let price = '';
@@ -266,64 +293,61 @@ async function run() {
                 price = e.price;
                 console.log('sss', sw);
             })
-            console.log('emmm', email);
             const q = {
                 serviceName: slotdata.serviceName
             }
             const r = await slotCollection.findOne(q);
-            console.log("query data", r)
+            console.log(r);
             if (r) {
                 r.doctorDetail.map(async (s) => {
                     const em = s.docEmail;
                     if (em === email) {
-                        
-                        console.log('hellll');
-                        const options = { upsert: true };
-                        const updateDoc = {
-
-                        }
-                        
-
-                       
+                        console.log(s.docName);
+                        const z = [...sw, ...s.slots];
+                        const result = await slotCollection.findOneAndUpdate(
+                            {
+                                'doctorDetail.slots': s.slots
+                            },
+                            {
+                                $set: {
+                                    'doctorDetail.$.slots': z
+                                }
+                            }
+                        )
+                        res.send(result);
                     }
                 })
-                const options = { upsert: true };
-                const result = await slotCollection.updateOne({ _id: r._id }, {
-                    $push: {
-                        doctorDetail: {
-                            docEmail: email,
-                            docName: name,
-                            price: price,
-                            slots: sw
-                        }
-                    }
-                }, options)
-                console.log('not same', result);
-                res.send(result);
+                console.log('not same');
+                // const u = [...r.doctorDetail, slotdata];
+                // const result = await slotCollection.findOneAndUpdate(
+                //     {
+                //         'doctorDetail': r.doctorDetail
+                //     },
+                //     {
+                //         $set: {
+                //             'doctorDetail': u
+                //         }
+                //     }
+                // )
+                // res.send(result);
+                // const options = { upsert: true };
+                // const result = await slotCollection.updateOne({ _id: r._id }, {
+                //     $push: {
+                //         doctorDetail: {
+                //             docEmail: email,
+                //             docName: name,
+                //             price: price,
+                //             slots: sw
+                //         }
+                //     }
+                // }, options)
+                // console.log('not same', result);
+                // res.send(result);
             }
             else {
                 const result = await slotCollection.insertOne(slotdata);
                 res.send(result);
             }
-
-            console.log("params",req.params.serviceName);
-            console.log('body',req.body);
-            // const slotName = await slotCollection.findOne({ serviceName: req.params.serviceName });
-            // const r = req.params;
-            // console.log(req.body.doctorDetail[0].docEmail);
-            // if (slotName) {
-            //     const t = slotName.doctorDetail.map(item => {
-            //         if (item.email === req.body.doctorDetail[0].docEmail) {
-            //             console.log('has')
-            //         }
-            //     }
-            //     )
-
-
-            // }
-
-
-
         })
         app.post('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const doctor = req.body;
@@ -346,4 +370,5 @@ async function run() {
     }
 }
 run().catch(e => console.error(e))
-app.listen(port, () => console.log(`Doctors Portal Server Running ${port}`))
+
+server.listen(port, () => console.log("server is running on port 5000"))

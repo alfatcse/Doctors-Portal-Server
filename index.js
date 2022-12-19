@@ -27,9 +27,11 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         socket.broadcast.emit("callEnded")
     })
+
     socket.on("callUser", (data) => {
         io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
     })
+
     socket.on("answerCall", (data) => {
         io.to(data.to).emit("callAccepted", data.signal)
     })
@@ -203,10 +205,26 @@ async function run() {
         })
         app.get('/bookingpatient/:specialty', async (req, res) => {
             const s = req.params.specialty;
-            console.log('ss', s);
+            //  console.log('ss', s);
             const allPatient = await bookingsCollection.find({ treatment: s }).toArray();
-            console.log(allPatient);
+            //console.log(allPatient);
             res.send(allPatient)
+        })
+        app.post('/vediocall/:id', async (req, res) => {
+            const id = req.params.id;
+            const calid = req.body;
+            console.log('id calid', id, calid);
+            const booking = await bookingsCollection.findOne({ _id: ObjectId(id) });
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    
+                    callerID: calid.collerid
+                }
+            }
+            const option = { upsert: true }
+            const updateResult = await bookingsCollection.updateOne(filter, updateDoc, option);
+            console.log(updateResult);
         })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;

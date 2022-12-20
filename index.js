@@ -82,7 +82,7 @@ function verifyJWT(req, res, next) {
     // console.log(req.headers.authorization);
     const authheader = req.headers.authorization;
     if (!authheader) {
-        return res.status(401).send('Unauthorized Accesss now');
+        return res.status(401).send('Unauthorized hhz Access');
     }
     const token = authheader.split(' ')[1];
     // console.log('token',token);
@@ -105,7 +105,7 @@ async function run() {
         const slotCollection = client.db('doctorsPortal').collection('slot');
         //make you use verifyAdmin after checking JWT
         const verifyAdmin = async (req, res, next) => {
-            console.log('inside:::', req.decoded.email);
+            // console.log('inside:::', req.decoded.email);
             const decodedEmail = req.decoded.email;
             const query = { email: decodedEmail };
             const user = await userCollection.findOne(query);
@@ -142,9 +142,9 @@ async function run() {
         app.get('/booking', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const decodedEmail = req.decoded.email;
-            // console.log('de', decodedEmail);
+            console.log('decod', decodedEmail);
             if (email !== decodedEmail) {
-                return res.status(403).send({ message: 'Forbidden nh Access' })
+                return res.status(403).send({ message: 'Forbidden  Access' })
             }
             const query = { email: email };
             const booking = await bookingsCollection.find(query).toArray();
@@ -161,7 +161,7 @@ async function run() {
         })
         app.get('/users', async (req, res) => {
             const query = {
-                
+
             };
             const users = await userCollection.find(query).toArray();
             res.send(users);
@@ -170,18 +170,21 @@ async function run() {
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
+            console.log('emailgh', email);
             const user = await userCollection.findOne(query);
             if (user) {
                 const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
+                console.log('token', token, user);
                 return res.send({ accessToken: token })
             }
-            res.status(403).send({ accessToken: 'No token' });
+            res.status(403).send({ accessToken: 'No fdfdtoken' });
         })
         app.get('/appointmentSpecialty', async (req, res) => {
             const query = {};
             const result = await appointmentOptionCollection.find(query).project({ name: 1 }).toArray();
             res.send(result);
         })
+        
         app.get('/addprice', async (req, res) => {
             const filter = {}
             const option = { upsert: true }
@@ -197,7 +200,18 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const booking = await bookingsCollection.findOne(query);
+            console.log(booking.phone);
             res.send(booking);
+        })
+        app.get('/docemailslot/:email',async(req,res)=>{
+            const email=req.params.email;
+            console.log(email);
+            const q={
+                docEmail:email
+            }
+            const resu=await slotCollection.findOne(q);
+            console.log('docem',resu); 
+            res.send(resu);
         })
         app.get('/useremail', async (req, res) => {
             const email = req.query.email;
@@ -207,8 +221,10 @@ async function run() {
         })
         app.get('/bookingpatient/:specialty', async (req, res) => {
             const s = req.params.specialty;
-            //  console.log('ss', s);
-            const allPatient = await bookingsCollection.find({ treatment: s }).toArray();
+
+            console.log('ss nnn', s);
+
+            const allPatient = await bookingsCollection.find({ doctor: s }).toArray();
             //console.log(allPatient);
             res.send(allPatient)
         })
@@ -220,7 +236,7 @@ async function run() {
             const filter = { _id: ObjectId(id) };
             const updateDoc = {
                 $set: {
-                    
+
                     callerID: calid.collerid
                 }
             }
@@ -300,74 +316,35 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
-        app.put('/addslot/:serviceName', async (req, res) => {
-            const slotdata = req.body;
-            let email = '';
-            let name = '';
-            let price = '';
-            let sw = [];
-            slotdata.doctorDetail.map(e => {
-                email = e.docEmail;
-                sw = e.slots;
-                name = e.docName;
-                price = e.price;
-                console.log('sss', sw);
-            })
-            const q = {
-                serviceName: slotdata.serviceName
+        app.put('/addslot/:email', async (req, res) => {
+            const email = req.params.email;
+            const slot = req.body;
+            console.log(email, slot);
+            const docSlot = {
+                docEmail: email,
+                docSlot: slot
             }
-            const r = await slotCollection.findOne(q);
-            console.log(r);
-            if (r) {
-                r.doctorDetail.map(async (s) => {
-                    const em = s.docEmail;
-                    if (em === email) {
-                        console.log(s.docName);
-                        const z = [...sw, ...s.slots];
-                        const result = await slotCollection.findOneAndUpdate(
-                            {
-                                'doctorDetail.slots': s.slots
-                            },
-                            {
-                                $set: {
-                                    'doctorDetail.$.slots': z
-                                }
-                            }
-                        )
-                        res.send(result);
+            const rt = await slotCollection.findOne({ docEmail: email });
+            console.log(rt);
+            if (rt) {
+                console.log('same', rt.docSlot);
+                const u = [...rt.docSlot, ...slot]
+                const filter = {
+                    docEmail: email
+                };
+                const options = { upsert: true };
+                const updateDoc = {
+                    $set: {
+                        docSlot: u
                     }
-                })
-                console.log('not same');
-                // const u = [...r.doctorDetail, slotdata];
-                // const result = await slotCollection.findOneAndUpdate(
-                //     {
-                //         'doctorDetail': r.doctorDetail
-                //     },
-                //     {
-                //         $set: {
-                //             'doctorDetail': u
-                //         }
-                //     }
-                // )
-                // res.send(result);
-                // const options = { upsert: true };
-                // const result = await slotCollection.updateOne({ _id: r._id }, {
-                //     $push: {
-                //         doctorDetail: {
-                //             docEmail: email,
-                //             docName: name,
-                //             price: price,
-                //             slots: sw
-                //         }
-                //     }
-                // }, options)
-                // console.log('not same', result);
-                // res.send(result);
+                }
+                const zu = await slotCollection.findOneAndUpdate(filter, updateDoc, options)
             }
             else {
-                const result = await slotCollection.insertOne(slotdata);
-                res.send(result);
+                console.log('not same');
+                const r = await slotCollection.insertOne(docSlot)
             }
+
         })
         app.post('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const doctor = req.body;
@@ -376,7 +353,7 @@ async function run() {
         })
         app.get('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {
-                role:'Doctor'
+                role: 'Doctor'
             };
             const doctors = await userCollection.find(query).toArray();
             res.send(doctors);
@@ -387,10 +364,10 @@ async function run() {
             const result = await userCollection.deleteOne(filter);
             res.send(result);
         })
-        app.put('/verifydoctor/:id',async(req,res)=>{
-            const id=req.params.id;
-            const sp=req.body;
-            console.log(id,sp);
+        app.put('/verifydoctor/:id', async (req, res) => {
+            const id = req.params.id;
+            const sp = req.body.specialty;
+            console.log(id, sp);
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
@@ -398,8 +375,21 @@ async function run() {
                     isverified: 'verified'
                 }
             }
-            const result=await userCollection.findOneAndUpdate(filter,updateDoc,options);
-            
+            const result = await userCollection.findOneAndUpdate(filter, updateDoc, options);
+            const q = {
+                name: sp
+            }
+            const doc = {
+                $push: {
+                    doctors: {
+                        name: result.value.name,
+                        docEmail:result.value.email
+                    }
+                }
+            }
+            const r = await appointmentOptionCollection.updateOne(q, doc, options);
+            res.send(result);
+
         })
     } finally {
 

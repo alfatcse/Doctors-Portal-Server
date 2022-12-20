@@ -160,7 +160,9 @@ async function run() {
             res.send(user);
         })
         app.get('/users', async (req, res) => {
-            const query = {};
+            const query = {
+                
+            };
             const users = await userCollection.find(query).toArray();
             res.send(users);
         })
@@ -373,15 +375,31 @@ async function run() {
             res.send(result);
         })
         app.get('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
-            const query = {};
-            const doctors = await doctorsCollection.find(query).toArray();
+            const query = {
+                role:'Doctor'
+            };
+            const doctors = await userCollection.find(query).toArray();
             res.send(doctors);
         })
         app.delete('/doctors/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
-            const result = await doctorsCollection.deleteOne(filter);
+            const result = await userCollection.deleteOne(filter);
             res.send(result);
+        })
+        app.put('/verifydoctor/:id',async(req,res)=>{
+            const id=req.params.id;
+            const sp=req.body;
+            console.log(id,sp);
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    isverified: 'verified'
+                }
+            }
+            const result=await userCollection.findOneAndUpdate(filter,updateDoc,options);
+            
         })
     } finally {
 

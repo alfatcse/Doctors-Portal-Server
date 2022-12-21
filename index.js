@@ -156,7 +156,7 @@ async function run() {
             const email = req.params.email;
             const query = { email };
             const user = await userCollection.findOne(query);
-            console.log('role', user.role);
+            // console.log('role', user.role);
             res.send(user);
         })
         app.get('/users', async (req, res) => {
@@ -184,7 +184,7 @@ async function run() {
             const result = await appointmentOptionCollection.find(query).project({ name: 1 }).toArray();
             res.send(result);
         })
-        
+
         app.get('/addprice', async (req, res) => {
             const filter = {}
             const option = { upsert: true }
@@ -203,14 +203,14 @@ async function run() {
             console.log(booking.phone);
             res.send(booking);
         })
-        app.get('/docemailslot/:email',async(req,res)=>{
-            const email=req.params.email;
+        app.get('/docemailslot/:email', async (req, res) => {
+            const email = req.params.email;
             console.log(email);
-            const q={
-                docEmail:email
+            const q = {
+                docEmail: email
             }
-            const resu=await slotCollection.findOne(q);
-            console.log('docem',resu); 
+            const resu = await slotCollection.findOne(q);
+            console.log('docem', resu);
             res.send(resu);
         })
         app.get('/useremail', async (req, res) => {
@@ -351,6 +351,39 @@ async function run() {
             const result = await doctorsCollection.insertOne(doctor);
             res.send(result);
         })
+        app.post('/deleteslot', async (req, res) => {
+            const delBody = req.body;
+            const r = await slotCollection.findOne({ docEmail: delBody.doctor });
+            r.docSlot.map(p => {
+                {
+                    if (p.date === delBody.AppointmentDate) {
+                        p.slot.pop(delBody.slot);
+                    }
+                }
+            })
+            console.log(r.docSlot);
+            const w=[];
+            console.log(w);
+            r.docSlot.map(p=>{
+                if(p.slot.length!==0)
+                {
+                    w.push(p);
+                }
+            })
+            console.log(w);
+            const filter = {
+                docEmail: delBody.doctor
+            };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    docSlot: w
+                }
+            }
+            const zu = await slotCollection.findOneAndUpdate(filter, updateDoc, options)
+            console.log(zu)
+            res.send(delBody);
+        })
         app.get('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {
                 role: 'Doctor'
@@ -383,7 +416,7 @@ async function run() {
                 $push: {
                     doctors: {
                         name: result.value.name,
-                        docEmail:result.value.email
+                        docEmail: result.value.email
                     }
                 }
             }

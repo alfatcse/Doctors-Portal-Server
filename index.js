@@ -103,7 +103,7 @@ async function run() {
         const doctorsCollection = client.db('doctorsPortal').collection('doctors');
         const paymentCollection = client.db('doctorsPortal').collection('payment');
         const slotCollection = client.db('doctorsPortal').collection('slot');
-        //make you use verifyAdmin after checking JWT
+        //make to use verifyAdmin after checking JWT
         const verifyAdmin = async (req, res, next) => {
             // console.log('inside:::', req.decoded.email);
             const decodedEmail = req.decoded.email;
@@ -131,14 +131,6 @@ async function run() {
             })
             res.send(options);
         })
-
-        /*
-        API Naming Convention::
-        1.app.get('/bookings')
-        2.app.get('/booking/:id')
-        3.app.post('booking')
-        4.app.post('/booking/:id')
-        */
         app.get('/booking', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const decodedEmail = req.decoded.email;
@@ -177,7 +169,7 @@ async function run() {
                 console.log('token', token, user);
                 return res.send({ accessToken: token })
             }
-            res.status(403).send({ accessToken: 'No fdfdtoken' });
+            res.status(403).send({ accessToken: 'No token' });
         })
         app.get('/appointmentSpecialty', async (req, res) => {
             const query = {};
@@ -261,6 +253,7 @@ async function run() {
             sendBookingEmail(booking);
             res.send(result);
         })
+        //user create method
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
@@ -298,13 +291,8 @@ async function run() {
             const updateResult = await bookingsCollection.updateOne(filter, updateDoc, option);
             res.send(result);
         })
+        //admin verify method
         app.put('/users/admin/:id', verifyJWT, verifyAdmin, async (req, res) => {
-            // const decodedEmail = req.decoded.email;
-            // const query = { email: decodedEmail };
-            // const user = await userCollection.findOne(query);
-            // if (user?.role !== 'admin') {
-            //     return res.status(403).send({ message: 'forbiden accesss' });
-            // }
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
@@ -316,6 +304,7 @@ async function run() {
             const result = await userCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
+        //date and slot adding method
         app.put('/addslot/:email', async (req, res) => {
             const email = req.params.email;
             const slot = req.body;
@@ -324,10 +313,23 @@ async function run() {
                 docEmail: email,
                 docSlot: slot
             }
+            const tz = await userCollection.findOne({ email: email });
+            const zu = await appointmentOptionCollection.findOne({ name: tz.specialty });
             const rt = await slotCollection.findOne({ docEmail: email });
-            console.log(rt);
+            slot.map(s => {
+                console.log('sss', s.slot);
+                zu.slots.push(...s.slot);
+            })
+            console.log(zu.slots);
+            const filter = {  name: tz.specialty };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    slots: zu.slots
+                }
+            }
+            await appointmentOptionCollection.findOneAndUpdate(filter,updateDoc,options);
             if (rt) {
-                console.log('same', rt.docSlot);
                 const u = [...rt.docSlot, ...slot]
                 const filter = {
                     docEmail: email
@@ -341,16 +343,16 @@ async function run() {
                 const zu = await slotCollection.findOneAndUpdate(filter, updateDoc, options)
             }
             else {
-                console.log('not same');
                 const r = await slotCollection.insertOne(docSlot)
             }
-
         })
+        //doctor adding method
         app.post('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const doctor = req.body;
             const result = await doctorsCollection.insertOne(doctor);
             res.send(result);
         })
+        //slot delete method while booking
         app.post('/deleteslot', async (req, res) => {
             const delBody = req.body;
             const r = await slotCollection.findOne({ docEmail: delBody.doctor });
@@ -362,11 +364,10 @@ async function run() {
                 }
             })
             console.log(r.docSlot);
-            const w=[];
+            const w = [];
             console.log(w);
-            r.docSlot.map(p=>{
-                if(p.slot.length!==0)
-                {
+            r.docSlot.map(p => {
+                if (p.slot.length !== 0) {
                     w.push(p);
                 }
             })
@@ -384,6 +385,7 @@ async function run() {
             console.log(zu)
             res.send(delBody);
         })
+        //all doctors find method
         app.get('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {
                 role: 'Doctor'
@@ -425,9 +427,8 @@ async function run() {
 
         })
     } finally {
-
     }
 }
 run().catch(e => console.error(e))
 
-server.listen(port, () => console.log("server is running on port 5000"))
+server.listen(port, () => console.log(`server is running on port ${port}`))

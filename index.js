@@ -238,6 +238,7 @@ async function run() {
         })
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
+            console.log('bbbbbb',booking.slot);
             const query = {
                 AppointmentDate: booking.AppointmentDate,
                 treatment: booking.treatment,
@@ -250,6 +251,14 @@ async function run() {
             }
             const result = await bookingsCollection.insertOne(booking);
             //send email about appointment confirmation 
+            const filter = {name: booking.treatment };
+            const updateDoc = {
+                $pop: {
+                    slots:1
+                }
+            }
+            const option = { upsert: true }
+            await appointmentOptionCollection.findOneAndUpdate(filter,updateDoc,option);
             sendBookingEmail(booking);
             res.send(result);
         })

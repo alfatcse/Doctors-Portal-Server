@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const {dbConnection,client}=require('./Utils/DBConnect');
 const UserRoute=require("./Routes/user.route");
+const AppointmentRoute=require("./Routes/appointment.route")
 const http = require("http");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5006;
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 const server = http.createServer(app);
 app.use('/api/v1',UserRoute);
+app.use('/api/v1',AppointmentRoute);
 // const io = require("socket.io")(server, {
 //   cors: {
 //     origin: "http://localhost:3000",

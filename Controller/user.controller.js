@@ -1,5 +1,5 @@
 const User = require("../Model/UserModel");
-const { allUsers,createUser } = require("../Services/user.service");
+const { allUsers, createUser } = require("../Services/user.service");
 exports.getAllusers = async (req, res, next) => {
   try {
     const allusers = await allUsers();
@@ -22,21 +22,21 @@ exports.getAllusers = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   try {
     console.log(req.body);
-      const user=new User(req.body);
-      const userCreate=await createUser(user);
-      if(userCreate){
-        res.status(200).json({
-            status: "Success",
-            message: "User Inserted",
-            data: userCreate,
-          });
-      }
+    const user = new User(req.body);
+    const userCreate = await createUser(user);
+    if (userCreate) {
+      res.status(200).json({
+        status: "Success",
+        message: "User Inserted",
+        data: userCreate,
+      });
+    }
   } catch (err) {
     res.status(400).json({
-        status: "Failed",
-        message: "User not Inserted",
-        data: err?.message,
-      });
-      next(err);
+      status: "Failed",
+      message: "User not Inserted",
+      data: err?.message,
+    });
+    next(err);
   }
 };

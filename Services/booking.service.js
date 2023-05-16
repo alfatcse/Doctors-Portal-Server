@@ -1,5 +1,6 @@
 const Booking=require('../Model/bookingModel');
 exports.CreateBooking=async(data)=>{
+    console.log('daaa',data);
     const booking=await Booking.create(data);
     if(booking){
         return booking

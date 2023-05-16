@@ -20,8 +20,8 @@ const bookingSchema = new mongoose.Schema(
     patient_email: {
       type: String,
       required: true,
-      unique: true,
       max: 50,
+      unique:true,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
@@ -30,7 +30,6 @@ const bookingSchema = new mongoose.Schema(
     doctor_email: {
       type: String,
       required: true,
-      unique: true,
       max: 50,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],

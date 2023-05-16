@@ -12,8 +12,7 @@ exports.postBooking = async (req, res, next) => {
     const alreadyBooked = await CheckBooking(query);
     console.log("book or not", alreadyBooked);
     if (alreadyBooked === false) {
-      const booking = new bookings(req.body);
-      const bookingCreate = await CreateBooking(booking);
+      const bookingCreate = await CreateBooking(req.body);
       if (bookingCreate) {
         res.status(200).json({
           status: "Success",

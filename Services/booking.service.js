@@ -1,10 +1,17 @@
 const Booking=require('../Model/bookingModel');
 exports.CreateBooking=async(data)=>{
-    console.log('Booking Service',data);
-    console.log(data);
     const booking=await Booking.create(data);
-    console.log(booking);
     if(booking){
         return booking
+    }
+}
+exports.CheckBooking=async(data)=>{
+    const alreadyBooked=await Booking.find(data)
+    console.log('aaa',alreadyBooked);
+    if(alreadyBooked?.length){
+        return true
+    }
+    else {
+        return false
     }
 }

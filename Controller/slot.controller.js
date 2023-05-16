@@ -22,10 +22,8 @@ exports.getSlot = async (req, res, next) => {
   }
 };
 exports.updateSlot = async (req, res, next) => {
-  console.log("updatedata", req?.body);
   try {
     const data = await updateSlot(req?.body);
-    console.log(data);
     if (data) {
       res.status(200).json({
         status: "Success",

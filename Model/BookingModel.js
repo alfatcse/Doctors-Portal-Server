@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema(
       required: [true, "Please provide a name"],
       min: [3, "Name must be three characters at least"],
       max: [20, "Name must be lower than twenty characters"],
-      lowercase: true,
+      lowercase: true, 
       trim: true,
     },
     slot: {

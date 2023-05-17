@@ -33,6 +33,9 @@ const userSchema=new mongoose.Schema({
     registrationnumber:{
         type:String,
         required:false,
+    },
+    isverified:{
+        type:String
     }
 },{ versionKey: false })
 module.exports=mongoose.model("users",userSchema,"users");

@@ -1,5 +1,5 @@
 const User = require("../Model/UserModel");
-const { allUsers, createUser, getRole } = require("../Services/user.service");
+const { allUsers, createUser, getRole, updateUserRole } = require("../Services/user.service");
 exports.getAllusers = async (req, res, next) => {
   try {
     const allusers = await allUsers(req.query.userType);
@@ -67,6 +67,7 @@ exports.getUserRole = async (req, res, next) => {
 exports.updateUser=async(req,res,next)=>{
   try{
     console.log(req.query.id);
+    const update=await updateUserRole(req.query.id);
   }catch(err){
     res.status(400).json({
       status: "Failed",

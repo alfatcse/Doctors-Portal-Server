@@ -1,10 +1,10 @@
 const User = require("../Model/UserModel");
 exports.allUsers = async (data) => {
-    console.log(data);
+  console.log(data);
   const query = { role: data };
   const users = await User.find(query);
   console.log(users);
-  if (users.length>0) {
+  if (users.length > 0) {
     return users;
   }
 };
@@ -18,4 +18,16 @@ exports.getRole = async (data) => {
   if (userRole?.role) {
     return userRole.role;
   }
+};
+exports.updateUserRole = async (data) => {
+  console.log("ser", data);
+  const filter = { _id: data };
+  const options = { upsert: true };
+  const updateDoc = {
+    $set: {
+      isverified: "verified",
+    },
+  };
+  const updateUser = await User.updateOne(filter, updateDoc,options);
+  console.log(updateUser);
 };

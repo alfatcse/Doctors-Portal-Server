@@ -4,6 +4,7 @@ const {
   CheckBooking,
   CheckPatient,
   InsertAppointment,
+  GetBooking,
 } = require("../Services/booking.service");
 const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
@@ -33,12 +34,19 @@ exports.postBooking = async (req, res, next) => {
           treatment: req.body.treatment,
           AppointmentDate: req.body.AppointmentDate,
         };
-        sendBookingEmail(booking);
-        res.status(200).json({
-          status: "Success",
-          message: "Booing Confirmed",
-          data: bookingCreate,
-        });
+        const c = await sendBookingEmail(booking);
+        if (c === true) {
+          res.status(200).json({
+            status: "Success",
+            message:
+              "Booing Confirmed.Please Check Your Email for confirmation",
+          });
+        } else if (c === false) {
+          res.status(200).json({
+            status: "Success",
+            message: "Booing Confirmed.",
+          });
+        }
       }
     } else if (patient === true) {
       const appointmentData = {
@@ -65,12 +73,19 @@ exports.postBooking = async (req, res, next) => {
             treatment: req.body.treatment,
             AppointmentDate: req.body.AppointmentDate,
           };
-          sendBookingEmail(booking);
-          res.status(200).json({
-            status: "Success",
-            message: "Booing Confirmed",
-            data: newBooing,
-          });
+          const c = await sendBookingEmail(booking);
+          if (c === true) {
+            res.status(200).json({
+              status: "Success",
+              message:
+                "Booing Confirmed.Please Check Your Email for confirmation",
+            });
+          } else if (c === false) {
+            res.status(200).json({
+              status: "Success",
+              message: "Booing Confirmed",
+            });
+          }
         }
       }
     }
@@ -78,6 +93,32 @@ exports.postBooking = async (req, res, next) => {
     res.status(400).json({
       status: "Failed",
       message: "Booking not Inserted",
+      data: err?.message,
+    });
+    next(err);
+  }
+};
+exports.getBooking = async (req, res, next) => {
+  try {
+    const email = req.query.email;
+    const booking = await GetBooking(email);
+    console.log(booking);
+    if (booking?.patient_name) {
+      res.status(200).json({
+        status: "Success",
+        message: "Bookings Found.",
+        data: booking,
+      });
+    } else {
+      res.status(400).json({
+        status: "Failed",
+        message: "No Bookings Found",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: "An Error Occurred",
       data: err?.message,
     });
     next(err);

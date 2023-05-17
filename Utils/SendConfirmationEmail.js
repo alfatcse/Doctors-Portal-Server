@@ -1,10 +1,10 @@
 const nodemailer = require("nodemailer");
-const sendBookingEmail = (booking) => {
+const sendBookingEmail = async (booking) => {
   console.log(booking);
   let config = {
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_ADDRESS,
+      user:  process.env.EMAIL_ADDRESS,
       pass: process.env.EMAIL_PASS,
     },
   };
@@ -17,23 +17,26 @@ const sendBookingEmail = (booking) => {
   let transporter = nodemailer.createTransport(config);
   let message = {
     from: process.env.EMAIL_ADDRESS,
-    to: booking.patient_email,
+    to: email,
     subject: "Appointment Confirmation",
     html: `<h3>Your appointment is confirmed</h3>
             <div> 
                 <p> Your appointment for treatment ${treatment}</p>
                 <p> Please Visit us on ${appointmentDate} at ${slot}</p>
                 <p>Thanks from Doctor's Portal</>
-            </div>`, 
+            </div>`,
   };
-  transporter
+  let confirmation = false;
+  const s = await transporter
     .sendMail(message)
     .then(() => {
-      console.log("done");
+      confirmation = true;
+      return confirmation;
     })
     .catch((error) => {
-      console.log(error);
+      return confirmation;
     });
+  return confirmation
 };
 module.exports = {
   sendBookingEmail,

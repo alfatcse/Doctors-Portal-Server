@@ -42,3 +42,10 @@ exports.CheckPatient=async (data)=>{
         return false
     }
 }
+exports.GetBooking=async (data)=>{
+    const booking=await Booking.findOne({patient_email:data})
+    console.log(booking);
+    if(booking?.patient_name){
+        return booking
+    }
+}

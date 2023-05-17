@@ -1,32 +1,78 @@
 const bookings = require("../Model/bookingModel");
-const { CreateBooking, CheckBooking } = require("../Services/booking.service");
+const {
+  CreateBooking,
+  CheckBooking,
+  CheckPatient,
+  InsertAppointment,
+} = require("../Services/booking.service");
 const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
   try {
-    const bookingBody = req.body;
-    const query = {
-      AppointmentDate: bookingBody?.AppointmentDate,
-      treatment: bookingBody?.treatment,
-      email: bookingBody?.patient_email,
-    };
-    const alreadyBooked = await CheckBooking(query);
-    if (alreadyBooked === false) {
-      const booking = new bookings(req.body);
+    const patient = await CheckPatient(req.body.patient_id);
+    if (patient === false) {
+      const booking = new bookings({
+        patient_name: req.body.patient_name,
+        patient_id: req.body.patient_id,
+        patient_email: req.body.patient_email,
+        patient_Phone: req.body.patient_Phone,
+        appointmentData: [
+          {
+            doctor_email: req.body.doctor_email,
+            treatment: req.body.treatment,
+            price: req.body.price,
+            AppointmentDate: req.body.AppointmentDate,
+            slot: req.body.slot,
+          },
+        ],
+      });
       const bookingCreate = await CreateBooking(booking);
-      sendBookingEmail(bookingCreate);
       if (bookingCreate) {
+        const booking = {
+          patient_email: req.body.patient_email,
+          slot: req.body.slot,
+          treatment: req.body.treatment,
+          AppointmentDate: req.body.AppointmentDate,
+        };
+        sendBookingEmail(booking);
         res.status(200).json({
           status: "Success",
-          message: "Booking Inserted",
+          message: "Booing Confirmed",
           data: bookingCreate,
         });
       }
-    } else if (alreadyBooked === true) {
-      const message = `You have already a booking on ${bookingBody?.AppointmentDate}`;
-      res.status(400).json({
-        status: "Failed",
-        message: message,
-      });
+    } else if (patient === true) {
+      const appointmentData = {
+        patient_id: req.body.patient_id,
+        doctor_email: req.body.doctor_email,
+        treatment: req.body.treatment,
+        price: req.body.price,
+        AppointmentDate: req.body.AppointmentDate,
+        slot: req.body.slot,
+      };
+      const hasBooing = await CheckBooking(appointmentData);
+      if (hasBooing === true) {
+        const message = `You have already a booking on ${req.body.AppointmentDate}`;
+        res.status(400).json({
+          status: "Failed",
+          message: message,
+        });
+      } else if (hasBooing === false) {
+        const newBooing = await InsertAppointment(appointmentData);
+        if (newBooing) {
+          const booking = {
+            patient_email: req.body.patient_email,
+            slot: req.body.slot,
+            treatment: req.body.treatment,
+            AppointmentDate: req.body.AppointmentDate,
+          };
+          sendBookingEmail(booking);
+          res.status(200).json({
+            status: "Success",
+            message: "Booing Confirmed",
+            data: newBooing,
+          });
+        }
+      }
     }
   } catch (err) {
     res.status(400).json({

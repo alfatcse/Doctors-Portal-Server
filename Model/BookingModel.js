@@ -7,36 +7,29 @@ const bookingSchema = new mongoose.Schema(
       required: [true, "Please provide a name"],
       min: [3, "Name must be three characters at least"],
       max: [20, "Name must be lower than twenty characters"],
-      lowercase: true, 
+      lowercase: true,
       trim: true,
     },
-    slot: {
-      type: String,
-      required: [true, "Please provide a name"],
-    },
-    AppointmentDate: {
-      type: String,
+    patient_id:{
+      type:String,
+      required:[true,"Please provide a id"],
+      unique:true,
     },
     patient_email: {
       type: String,
       required: true,
       max: 50,
-      unique:true,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
     patient_Phone: { type: Number, required: true },
-    price: { type: Number },
-    doctor_email: {
-      type: String,
-      required: true,
-      max: 50,
-      lowercase: true,
-      validate: [validator.isEmail, "Please provide a valid email"],
-    },
-    treatment: {
-      type: String,
-    },
+    appointmentData:[{
+      doctor_email:String,
+      treatment:String,
+      price:Number,
+      AppointmentDate:String,
+      slot:String
+    }]
   },
   { versionKey: false }
 );

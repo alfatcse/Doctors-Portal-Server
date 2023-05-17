@@ -36,6 +36,5 @@ exports.updateSlot = async (data) => {
     },
   };
   const zu = await slots.findOneAndUpdate(filter, updateDoc);
-  console.log('zu',zu);
   return w;
 };

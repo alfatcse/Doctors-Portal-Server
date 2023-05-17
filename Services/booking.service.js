@@ -1,16 +1,44 @@
-const Booking=require('../Model/bookingModel');
-exports.CreateBooking=async(data)=>{
-    const booking=await Booking.create(data);
-    if(booking){
-        return booking
+const Booking = require("../Model/bookingModel");
+exports.CreateBooking = async (data) => {
+  const booking=await Booking.create(data);
+  if(booking){
+      return booking
+  }
+};
+exports.CheckBooking = async (data) => {
+  const patient=await Booking.findOne({patient_id:data.patient_id})
+  let hasBooing=false;
+  patient?.appointmentData.map((a)=>{
+    if(a?.doctor_email===data?.doctor_email&&a?.treatment===data?.treatment&&a?.AppointmentDate===data?.AppointmentDate){
+        hasBooing=true
     }
+  })
+  return hasBooing;
+};
+exports.InsertAppointment=async (data)=>{
+    const patient=await Booking.findOne({patient_id:data.patient_id})
+    const a={
+        doctor_email: data.doctor_email,
+        treatment: data.treatment,
+        price: data.price,
+        AppointmentDate: data.AppointmentDate,
+        slot: data.slot,
+    }
+    patient?.appointmentData.push(a); 
+    const updateDoc = {
+        $set: {
+            appointmentData: patient.appointmentData,
+        },
+      };
+    const updateAppointment=await Booking.findOneAndUpdate({patient_id:data.patient_id},updateDoc);
+    return updateAppointment;
 }
-exports.CheckBooking=async(data)=>{
-    const alreadyBooked=await Booking.find(data)
-    if(alreadyBooked?.length){
+exports.CheckPatient=async (data)=>{
+    const patient=await Booking.findOne({patient_id:data})
+    if(patient?._id){
         return true
     }
-    else {
+    else{
         return false
     }
 }

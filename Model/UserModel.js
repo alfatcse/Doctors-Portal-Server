@@ -24,7 +24,6 @@ const userSchema=new mongoose.Schema({
     image:{
         type:String,
         required:true,
-        unique:true,
         validate:[validator.isURL,'Please provide a valid Url']
     },
     specialty:{

@@ -1,12 +1,12 @@
 const User = require("../Model/UserModel");
-const { allUsers, createUser } = require("../Services/user.service");
+const { allUsers, createUser, getRole } = require("../Services/user.service");
 exports.getAllusers = async (req, res, next) => {
   try {
-    const allusers = await allUsers();
-    if (allusers) {
+    const allusers = await allUsers(req.query.userType);
+    if (allusers?.length>0) {
       res.status(200).json({
         status: "Success",
-        message: "All Users Found",
+        message: `All ${req.query.userType} Found`,
         data: [...allusers],
       });
     }
@@ -40,3 +40,40 @@ exports.createUser = async (req, res, next) => {
     next(err);
   }
 };
+exports.getUserRole = async (req, res, next) => {
+  try {
+    const getrole = await getRole(req.query.email);
+    if (getrole === "Doctor" || getrole === "Patient" || getrole === "admin") {
+      res.status(200).json({
+        status: "Success",
+        message: "All Users Found",
+        data: getrole,
+      });
+    } else {
+      res.status(400).json({
+        status: "Failed",
+        message: "No User Found",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: "No User Found",
+      data: err?.message,
+    });
+    next(err);
+  }
+};
+exports.updateUser=async(req,res,next)=>{
+  try{
+    console.log(req.query.id);
+  }catch(err){
+    res.status(400).json({
+      status: "Failed",
+      message: "No User Found",
+      data: err?.message,
+    });
+    next(err);
+  }
+}
+

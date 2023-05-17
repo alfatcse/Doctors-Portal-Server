@@ -3,7 +3,7 @@ const validator = require("validator");
 const appointmentOptions = mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Please Provide a Service Name"],
+    required: [true, "Please Provide a Service Name"], 
     lowercase: true,
     trim: true,
   },

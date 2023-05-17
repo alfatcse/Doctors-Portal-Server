@@ -1,8 +1,8 @@
 const bookings = require("../Model/bookingModel");
 const { CreateBooking, CheckBooking } = require("../Services/booking.service");
+const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
   try {
-    console.log("Booking controller", req.body);
     const bookingBody = req.body;
     const query = {
       AppointmentDate: bookingBody?.AppointmentDate,
@@ -10,9 +10,10 @@ exports.postBooking = async (req, res, next) => {
       email: bookingBody?.patient_email,
     };
     const alreadyBooked = await CheckBooking(query);
-    console.log("book or not", alreadyBooked);
     if (alreadyBooked === false) {
-      const bookingCreate = await CreateBooking(req.body);
+      const booking = new bookings(req.body);
+      const bookingCreate = await CreateBooking(booking);
+      sendBookingEmail(bookingCreate);
       if (bookingCreate) {
         res.status(200).json({
           status: "Success",

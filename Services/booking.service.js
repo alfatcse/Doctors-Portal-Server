@@ -1,6 +1,5 @@
 const Booking=require('../Model/bookingModel');
 exports.CreateBooking=async(data)=>{
-    console.log('daaa',data);
     const booking=await Booking.create(data);
     if(booking){
         return booking
@@ -8,7 +7,6 @@ exports.CreateBooking=async(data)=>{
 }
 exports.CheckBooking=async(data)=>{
     const alreadyBooked=await Booking.find(data)
-    console.log('aaa',alreadyBooked);
     if(alreadyBooked?.length){
         return true
     }

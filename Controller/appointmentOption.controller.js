@@ -2,6 +2,7 @@ const allappointmentOptions = require("../Model/AppointmentOptionModel");
 const {
   appointmentOptions,
   appointmentOptionsSpeciality,
+  InsertDoctorAfterVerification,
 } = require("../Services/appointment.service");
 exports.getAllappointmentOptions = async (req, res, next) => {
   try {
@@ -41,4 +42,10 @@ exports.getSpeciality = async (req, res, next) => {
     });
     next(err);
   }
+};
+exports.insertDoctor = async (data) => {
+  try {
+    console.log("insert", data);
+    InsertDoctorAfterVerification(data)
+  } catch (err) {}
 };

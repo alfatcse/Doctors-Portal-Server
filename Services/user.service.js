@@ -3,9 +3,12 @@ exports.allUsers = async (data) => {
   console.log(data);
   const query = { role: data };
   const users = await User.find(query);
-  console.log(users);
+  console.log('uuuu',users);
   if (users.length > 0) {
     return users;
+  }
+  else{
+    return users
   }
 };
 exports.createUser = async (data) => {
@@ -20,14 +23,27 @@ exports.getRole = async (data) => {
   }
 };
 exports.updateUserRole = async (data) => {
-  console.log("ser", data);
   const filter = { _id: data };
-  const options = { upsert: true };
+  const options = { new: true, useFindAndModify: false };
   const updateDoc = {
     $set: {
       isverified: "verified",
     },
   };
-  const updateUser = await User.updateOne(filter, updateDoc,options);
-  console.log(updateUser);
+  const updateUser = await User.findOneAndUpdate(filter, updateDoc, options);
+  if (updateUser?.isverified==='verified') {
+    return updateUser;
+  } else {
+    return false;
+  }
+};
+exports.deleteuser = async (data) => {
+  console.log('deldata',data);
+  const deleteUser = await User.deleteOne({ _id: data });
+  console.log(deleteUser);
+  if (deleteUser.deletedCount === 1) {
+    return true;
+  } else {
+    return false;
+  }
 };

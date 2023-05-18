@@ -12,3 +12,21 @@ exports.appointmentOptionsSpeciality = async () => {
     return data;
   }
 };
+exports.InsertDoctorAfterVerification = async (data) => {
+    console.log(data);
+  const q = {
+    name: data?.specialty,
+  };
+  const options = { new: true, useFindAndModify: false };
+  const doc = {
+    $push: {
+      doctors: {
+        name: data?.name,
+        docEmail: data?.email,
+        doctorId: data?._id,
+      },
+    },
+  };
+  const r = await appointmentOptions.updateOne(q,doc,options);
+  console.log("iiii", r);
+};

@@ -1,9 +1,16 @@
 const User = require("../Model/UserModel");
-const { allUsers, createUser, getRole, updateUserRole } = require("../Services/user.service");
+const {
+  allUsers,
+  createUser,
+  getRole,
+  updateUserRole,
+  deleteuser,
+} = require("../Services/user.service");
+const { insertDoctor } = require("./appointmentOption.controller");
 exports.getAllusers = async (req, res, next) => {
   try {
     const allusers = await allUsers(req.query.userType);
-    if (allusers?.length>0) {
+    if (allusers) {
       res.status(200).json({
         status: "Success",
         message: `All ${req.query.userType} Found`,
@@ -64,11 +71,25 @@ exports.getUserRole = async (req, res, next) => {
     next(err);
   }
 };
-exports.updateUser=async(req,res,next)=>{
-  try{
-    console.log(req.query.id);
-    const update=await updateUserRole(req.query.id);
-  }catch(err){
+exports.updateUser = async (req, res, next) => {
+  try {
+    const update = await updateUserRole(req.query.id);
+    if (update) {
+      insertDoctor(update);
+      
+      res.status(200).json({
+        status: "Success",
+        message: "Updated Successfully",
+      });
+    } else if (update === false) {
+      res.status(400).json({
+        status: "Failed",
+        message: "No User Found",
+        data: err?.message,
+      });
+      next(err);
+    }
+  } catch (err) {
     res.status(400).json({
       status: "Failed",
       message: "No User Found",
@@ -76,5 +97,29 @@ exports.updateUser=async(req,res,next)=>{
     });
     next(err);
   }
-}
-
+};
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const deleteUser = await deleteuser(req.query.id);
+    console.log(deleteUser);
+    if (deleteUser === true) {
+      res.status(200).json({
+        status: "Success",
+        message: "Deleted Successfully",
+      });
+    }
+    else{
+      res.status(400).json({
+        status: "Success",
+        message: "Deleted Failed",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: "No User Found",
+      data: err?.message,
+    });
+    next(err);
+  }
+};

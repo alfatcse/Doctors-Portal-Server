@@ -4,8 +4,6 @@ const appointmentOptions = mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please Provide a Service Name"], 
-    lowercase: true,
-    trim: true,
   },
   price: {
     type: Number,
@@ -28,6 +26,9 @@ const appointmentOptions = mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, "Please provide a valid email"],
       },
+      doctorId:{
+        type:String
+      }
     },
   ],
 },{ versionKey: false });

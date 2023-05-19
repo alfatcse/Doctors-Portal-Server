@@ -46,4 +46,14 @@ exports.deleteuser = async (data) => {
   } else {
     return false;
   }
-};
+}; 
+exports.getSingleuser=async (data)=>{
+  console.log(data);
+  const user=await User.findOne({email:data})
+  if(user?.isverified){
+    return user
+  }
+  else{
+    return false
+  }
+}

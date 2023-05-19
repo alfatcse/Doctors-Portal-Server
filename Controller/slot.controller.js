@@ -1,15 +1,19 @@
 const slots = require("../Model/SlotModel");
-const { getSlot, updateSlot } = require("../Services/slot.service");
+const { getSlot, updateSlot, insertNewSlot } = require("../Services/slot.service");
 exports.getSlot = async (req, res, next) => {
-  console.log("req", req?.params);
   try {
     const data = await getSlot(req?.params);
-    console.log("slotData", data);
     if (data) {
       res.status(200).json({
         status: "Success",
         message: "Slots Found",
         data: data,
+      });
+    }
+    else if(data===false){
+      res.status(400).json({
+        status: "Failed",
+        message: "No Slot Found",
       });
     }
   } catch (err) {
@@ -40,3 +44,16 @@ exports.updateSlot = async (req, res, next) => {
     next(err);
   }
 };
+exports.insertSlot=async(req,res,next)=>{
+  try{
+    const data=await insertNewSlot(req.body);
+    console.log(data);
+  }catch(err){
+    res.status(400).json({
+      status: "Failed",
+      message: "Slot can not Insert",
+      data: err?.message,
+    });
+    next(err);
+  }
+}

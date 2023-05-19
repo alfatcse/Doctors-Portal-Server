@@ -6,7 +6,7 @@ const SlotSchema = mongoose.Schema(
       type: String,
       required: [true, "Please Provide Doctor Email"],
       lowercase: true,
-      trim: true,
+      trim: true, 
       validate: [validator.isEmail, "Please provide a valid email"],
     },
     docSlot: [

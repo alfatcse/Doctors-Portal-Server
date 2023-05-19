@@ -25,7 +25,7 @@ exports.InsertDoctorAfterVerification = async (data) => {
         docEmail: data?.email,
         doctorId: data?._id,
       },
-    },
+    }, 
   };
   const r = await appointmentOptions.updateOne(q,doc,options);
   console.log("iiii", r);

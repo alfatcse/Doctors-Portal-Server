@@ -5,6 +5,7 @@ const {
   getRole,
   updateUserRole,
   deleteuser,
+  getSingleuser,
 } = require("../Services/user.service");
 const { insertDoctor } = require("./appointmentOption.controller");
 exports.getAllusers = async (req, res, next) => {
@@ -28,7 +29,7 @@ exports.getAllusers = async (req, res, next) => {
 };
 exports.createUser = async (req, res, next) => {
   try {
-    console.log(req.body);
+    console.log('emm',req.body);
     const user = new User(req.body);
     const userCreate = await createUser(user);
     if (userCreate) {
@@ -76,7 +77,7 @@ exports.updateUser = async (req, res, next) => {
     const update = await updateUserRole(req.query.id);
     if (update) {
       insertDoctor(update);
-      
+
       res.status(200).json({
         status: "Success",
         message: "Updated Successfully",
@@ -107,11 +108,35 @@ exports.deleteUser = async (req, res, next) => {
         status: "Success",
         message: "Deleted Successfully",
       });
-    }
-    else{
+    } else {
       res.status(400).json({
         status: "Success",
         message: "Deleted Failed",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: "No User Found",
+      data: err?.message,
+    });
+    next(err);
+  }
+};
+exports.getSingleUser = async (req, res, next) => {
+  try {
+    console.log('sngle',req.query.userEmail);
+    const getSingleUser = await getSingleuser(req.query.userEmail);
+    if (getSingleUser !== false) {
+      res.status(200).json({
+        status: "Success",
+        message: `User Found`,
+        data: getSingleUser,
+      });
+    } else {
+      res.status(400).json({
+        status: "Failed",
+        message: "No User Found",
       });
     }
   } catch (err) {

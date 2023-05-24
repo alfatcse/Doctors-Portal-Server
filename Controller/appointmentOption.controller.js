@@ -4,7 +4,7 @@ const {
   appointmentOptionsSpeciality,
   InsertDoctorAfterVerification,
 } = require("../Services/appointment.service");
-exports.getAllappointmentOptions = async (req, res, next) => {
+exports.getAllappointmentOptions = async (req, res, next) => { 
   try {
     const data = await appointmentOptions();
     if (data) {

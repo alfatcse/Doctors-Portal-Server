@@ -10,3 +10,4 @@ router
 router.route("/usersrole").get(userController.getUserRole);
 router.route("/user").get(userController.getSingleUser)
 module.exports = router;
+ 

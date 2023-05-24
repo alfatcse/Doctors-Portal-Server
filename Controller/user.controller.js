@@ -125,7 +125,6 @@ exports.deleteUser = async (req, res, next) => {
 };
 exports.getSingleUser = async (req, res, next) => {
   try {
-    console.log('sngle',req.query.userEmail);
     const getSingleUser = await getSingleuser(req.query.userEmail);
     if (getSingleUser !== false) {
       res.status(200).json({

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../Controller/user.controller");
+const {verifyJWT}  = require("../Utils/JWT");
 router
   .route("/users")
   .get(userController.getAllusers)
@@ -8,6 +9,6 @@ router
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
 router.route("/usersrole").get(userController.getUserRole);
-router.route("/user").get(userController.getSingleUser)
+router.route("/user").get(verifyJWT,userController.getSingleUser)
 module.exports = router;
  

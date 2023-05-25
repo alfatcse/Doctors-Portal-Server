@@ -6,9 +6,9 @@ router
   .route("/users")
   .get(userController.getAllusers)
   .post(userController.createUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
-router.route("/usersrole").get(userController.getUserRole);
+  .patch(verifyJWT,userController.updateUser)
+  .delete(verifyJWT,userController.deleteUser);
+router.route("/usersrole").get(verifyJWT,userController.getUserRole);
 router.route("/user").get(verifyJWT,userController.getSingleUser)
 module.exports = router;
  

@@ -29,7 +29,6 @@ exports.getAllusers = async (req, res, next) => {
 };
 exports.createUser = async (req, res, next) => {
   try {
-    console.log('emm',req.body);
     const user = new User(req.body);
     const userCreate = await createUser(user);
     if (userCreate) {
@@ -77,7 +76,6 @@ exports.updateUser = async (req, res, next) => {
     const update = await updateUserRole(req.query.id);
     if (update) {
       insertDoctor(update);
-
       res.status(200).json({
         status: "Success",
         message: "Updated Successfully",
@@ -102,7 +100,6 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const deleteUser = await deleteuser(req.query.id);
-    console.log(deleteUser);
     if (deleteUser === true) {
       res.status(200).json({
         status: "Success",
@@ -125,12 +122,14 @@ exports.deleteUser = async (req, res, next) => {
 };
 exports.getSingleUser = async (req, res, next) => {
   try {
-    const getSingleUser = await getSingleuser(req.query.userEmail);
-    if (getSingleUser !== false) {
+   
+    const SingleUser = await getSingleuser(req.query.userEmail);
+
+    if (SingleUser !== false) {
       res.status(200).json({
         status: "Success",
         message: `User Found`,
-        data: getSingleUser,
+        data: SingleUser,
       });
     } else {
       res.status(400).json({

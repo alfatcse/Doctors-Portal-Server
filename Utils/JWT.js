@@ -13,13 +13,11 @@ exports.createJwt = async (req, res, next) => {
   }
 };
 exports.verifyJWT = async (req, res, next) => {
-  console.log("header", req.headers.authorization);
   const auth_header = req.headers.authorization;
   if (!auth_header) {
     return res.status(401).send("Unauthorized Access");
   }
   const token = auth_header.split(" ")[1];
-  console.log('ttt', token);
   jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
     if (err) {
       console.log(err);

@@ -35,7 +35,8 @@ const userSchema=new mongoose.Schema({
         required:false,
     },
     isverified:{
-        type:String
+        type:String,
+        required:false
     }
 },{ versionKey: false })
 module.exports=mongoose.model("users",userSchema,"users");

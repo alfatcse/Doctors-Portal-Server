@@ -13,7 +13,7 @@ exports.appointmentOptionsSpeciality = async () => {
   }
 };
 exports.InsertDoctorAfterVerification = async (data) => {
-    console.log(data);
+   
   const q = {
     name: data?.specialty,
   };
@@ -28,5 +28,4 @@ exports.InsertDoctorAfterVerification = async (data) => {
     }, 
   };
   const r = await appointmentOptions.updateOne(q,doc,options);
-  console.log("iiii", r);
 };

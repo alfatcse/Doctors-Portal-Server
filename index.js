@@ -8,6 +8,7 @@ const AppointmentRoute=require("./Routes/appointment.route")
 const SlotRoute=require("./Routes/slot.route")
 const BookingRoute=require("./Routes/booking.route")
 const JwtRoute=require("./Routes/jwt.route")
+const paymentRoute=require("./Routes/payment.route")
 const http = require("http");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5006;
@@ -21,6 +22,7 @@ app.use('/api/v1',AppointmentRoute);
 app.use('/api/v1',SlotRoute);
 app.use('/api/v1',BookingRoute);
 app.use('/api/v1',JwtRoute);
+app.use('/api/v1',paymentRoute);
 // const io = require("socket.io")(server, {
 //   cors: {
 //     origin: "http://localhost:3000",

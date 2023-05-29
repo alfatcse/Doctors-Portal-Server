@@ -26,7 +26,7 @@ exports.getAllappointmentOptions = async (req, res, next) => {
 exports.getSpeciality = async (req, res, next) => {
   try {
     const data = await appointmentOptionsSpeciality();
-    console.log(data);
+   
     if (data?.length > 0) {
       res.status(200).json({
         status: "Success",
@@ -45,7 +45,7 @@ exports.getSpeciality = async (req, res, next) => {
 };
 exports.insertDoctor = async (data) => {
   try {
-    console.log("insert", data);
+  
     InsertDoctorAfterVerification(data)
   } catch (err) {}
 };

@@ -5,7 +5,7 @@ const {
   CheckPatient,
   InsertAppointment,
   GetBooking,
-  get_single_booking
+  get_single_booking,
 } = require("../Services/booking.service");
 const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
@@ -103,7 +103,6 @@ exports.getBooking = async (req, res, next) => {
   try {
     const email = req.query.email;
     const booking = await GetBooking(email);
-    
     if (booking?.patient_name) {
       res.status(200).json({
         status: "Success",
@@ -127,17 +126,15 @@ exports.getBooking = async (req, res, next) => {
 };
 exports.getSingleBooking = async (req, res, next) => {
   try {
-    console.log('bookings data',req.params.id);
-    const b=await get_single_booking(req.params.id)
-    console.log(b);
-    if(b?.appointmentData){
+    const b = await get_single_booking(req.params.id);
+
+    if (b?.appointmentData) {
       res.status(200).json({
         status: "Success",
         message: "Bookings Found.",
         data: b?.appointmentData,
       });
-    }
-    else{
+    } else {
       res.status(400).json({
         status: "Failed",
         message: "No data found",

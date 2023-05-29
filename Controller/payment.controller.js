@@ -29,7 +29,7 @@ exports.getPaymentIntent = async (req, res, next) => {
 };
 exports.confirmPayment = async (req, res, next) => {
   try {
-    console.log(req.body);
+
     const confirmation = await confirmPayment(req.body);
   } catch (err) {
     res.status(400).json({

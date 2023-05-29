@@ -3,7 +3,7 @@ const Payment = require("../Model/paymentModel");
 const Booking = require("../Model/bookingModel");
 const { ObjectId } = require("mongodb");
 exports.createPaymentIntent = async (data) => {
-  console.log(data);
+
   const paymentIntent = await stripe.paymentIntents.create({
     currency: "usd",
     amount: data,
@@ -49,6 +49,6 @@ exports.confirmPayment=async (data)=>{
                 }
             }
         ]);   
-        console.log('result',result);
+       
     }
 }

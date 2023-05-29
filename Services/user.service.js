@@ -36,7 +36,7 @@ exports.updateUserRole = async (data) => {
 exports.deleteuser = async (data) => {
   const deleteUser = await User.deleteOne({ _id: data });
   if (deleteUser.deletedCount === 1) {
-    return true;
+    return deleteUser;
   } else {
     return false;
   }

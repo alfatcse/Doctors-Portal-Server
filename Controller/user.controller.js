@@ -100,10 +100,12 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const deleteUser = await deleteuser(req.query.id);
-    if (deleteUser === true) {
+    console.log(deleteUser);
+    if (deleteUser.deletedCount === 1) {
       res.status(200).json({
         status: "Success",
         message: "Deleted Successfully",
+        data:deleteUser
       });
     } else {
       res.status(400).json({

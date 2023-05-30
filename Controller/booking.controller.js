@@ -9,6 +9,7 @@ const {
 } = require("../Services/booking.service");
 const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
+  console.log("booking", req.body);
   try {
     const patient = await CheckPatient(req.body.patient_id);
     if (patient === false) {
@@ -24,6 +25,7 @@ exports.postBooking = async (req, res, next) => {
             price: req.body.price,
             AppointmentDate: req.body.AppointmentDate,
             slot: req.body.slot,
+            isPaid: req.body.isPaid,
           },
         ],
       });
@@ -57,6 +59,7 @@ exports.postBooking = async (req, res, next) => {
         price: req.body.price,
         AppointmentDate: req.body.AppointmentDate,
         slot: req.body.slot,
+        isPaid: req.body.isPaid,
       };
       const hasBooing = await CheckBooking(appointmentData);
       if (hasBooing === true) {

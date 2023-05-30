@@ -28,6 +28,7 @@ exports.InsertAppointment = async (data) => {
     price: data.price,
     AppointmentDate: data.AppointmentDate,
     slot: data.slot,
+    isPaid: data.isPaid,
   };
   patient?.appointmentData.push(a);
   const updateDoc = {
@@ -78,6 +79,6 @@ exports.get_single_booking = async (data) => {
       $unwind: "$appointmentData",
     },
   ]);
-  
+
   return b[0];
 };

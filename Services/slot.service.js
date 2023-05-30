@@ -13,7 +13,7 @@ exports.getSlot = async (data) => {
   }
 };
 exports.updateSlot = async (data) => {
-  console.log("Update slot", data);
+  console.log("Update slot");
   const query = {
     docEmail: data.doctor,
   };
@@ -48,6 +48,7 @@ exports.updateSlot = async (data) => {
     { name: a.specialty },
     updateFirst
   );
+  console.log("update slot", updateSlot);
   return w;
 };
 exports.insertNewSlot = async (data) => {

@@ -29,8 +29,13 @@ exports.getPaymentIntent = async (req, res, next) => {
 };
 exports.confirmPayment = async (req, res, next) => {
   try {
-
     const confirmation = await confirmPayment(req.body);
+    if (confirmation === true) {
+      res.status(200).json({
+        status: "Success",
+        message: "Payment Confirmed",
+      });
+    }
   } catch (err) {
     res.status(400).json({
       status: "Failed",

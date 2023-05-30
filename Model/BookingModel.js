@@ -10,10 +10,10 @@ const bookingSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    patient_id:{
-      type:String,
-      required:[true,"Please provide a id"],
-      unique:true,
+    patient_id: {
+      type: String,
+      required: [true, "Please provide a id"],
+      unique: true,
     },
     patient_email: {
       type: String,
@@ -23,13 +23,16 @@ const bookingSchema = new mongoose.Schema(
       validate: [validator.isEmail, "Please provide a valid email"],
     },
     patient_Phone: { type: Number, required: true },
-    appointmentData:[{
-      doctor_email:String,
-      treatment:String,
-      price:Number,
-      AppointmentDate:String,
-      slot:String
-    }]
+    appointmentData: [
+      {
+        doctor_email: String,
+        treatment: String,
+        price: Number,
+        AppointmentDate: String,
+        slot: String,
+        isPaid: Boolean,
+      },
+    ],
   },
   { versionKey: false }
 );

@@ -5,10 +5,7 @@ const paymentSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
-      max: 50,
-      lowercase: true,
-      validate: [validator.isEmail, "Please provide a valid email"],
+      unique: false,
     },
     price: {
       type: Number,
@@ -17,10 +14,12 @@ const paymentSchema = new mongoose.Schema(
     transactionid: {
       type: String,
       required: true,
+      unique: true,
     },
     bookingID: {
       type: String,
       required: true,
+      unique: true,
     },
   },
   { versionKey: false }

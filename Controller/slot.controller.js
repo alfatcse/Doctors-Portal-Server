@@ -1,4 +1,3 @@
-const slots = require("../Model/SlotModel");
 const {
   getSlot,
   updateSlot,

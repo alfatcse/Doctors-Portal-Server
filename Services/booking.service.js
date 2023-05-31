@@ -79,6 +79,31 @@ exports.get_single_booking = async (data) => {
       $unwind: "$appointmentData",
     },
   ]);
-
   return b[0];
+};
+exports.getPatients = async (data) => {
+  console.log("ser", data);
+  const allPatients = await Booking.aggregate([
+    {
+      $unwind: "$appointmentData",
+    },
+    {
+      $match: {
+        "appointmentData.doctor_email": data,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        patient: {
+          $push: {
+            appointmentData: "$appointmentData",
+            patient_name: "$patient_name",
+            patient_email: "$patient_email",
+          },
+        },
+      },
+    },
+  ]);
+  return allPatients[0].patient;
 };

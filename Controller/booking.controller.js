@@ -6,6 +6,7 @@ const {
   InsertAppointment,
   GetBooking,
   get_single_booking,
+  getPatients,
 } = require("../Services/booking.service");
 const { sendBookingEmail } = require("../Utils/SendConfirmationEmail");
 exports.postBooking = async (req, res, next) => {
@@ -130,7 +131,6 @@ exports.getBooking = async (req, res, next) => {
 exports.getSingleBooking = async (req, res, next) => {
   try {
     const b = await get_single_booking(req.params.id);
-
     if (b?.appointmentData) {
       res.status(200).json({
         status: "Success",
@@ -141,6 +141,32 @@ exports.getSingleBooking = async (req, res, next) => {
       res.status(400).json({
         status: "Failed",
         message: "No data found",
+      });
+    }
+  } catch (err) {
+    res.status(400).json({
+      status: "Failed",
+      message: "An Error Occurred",
+      data: err?.message,
+    });
+    next(err);
+  }
+};
+exports.getAllBooingDoctor = async (req, res, next) => {
+  console.log(req.query.email);
+  try {
+    const allPatients = await getPatients(req.query.email);
+    if (allPatients.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        message: "Data found",
+        data: allPatients,
+      });
+    } else {
+      res.status(200).json({
+        status: "Success",
+        message: "Data found",
+        data: allPatients,
       });
     }
   } catch (err) {

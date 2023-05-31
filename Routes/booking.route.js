@@ -6,5 +6,6 @@ router
   .route("/bookings")
   .post(bookingController.postBooking)
   .get(bookingController.getBooking);
-router.route("/booking/:id").get(verifyJWT,bookingController.getSingleBooking)  
+router.route("/booking/:id").get(verifyJWT, bookingController.getSingleBooking);
+router.route("/booking-doctor").get(bookingController.getAllBooingDoctor);
 module.exports = router;

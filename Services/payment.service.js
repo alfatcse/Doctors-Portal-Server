@@ -56,6 +56,11 @@ exports.confirmPayment = async (data) => {
         },
       },
     ]);
-    console.log("result", result);
+    console.log("resulgggt", result.result.nModified);
+    if (result.result.nModified === 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 };

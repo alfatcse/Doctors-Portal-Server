@@ -35,6 +35,11 @@ exports.confirmPayment = async (req, res, next) => {
         status: "Success",
         message: "Payment Confirmed",
       });
+    } else {
+      res.status(400).json({
+        status: "Failed",
+        message: "Payment Intent not created",
+      });
     }
   } catch (err) {
     res.status(400).json({

@@ -1,41 +1,40 @@
 ### Introduction
-This Project is the backend of Doctors's Portal where a user can register as a patients or doctor.Patient can book an appointment for a service by making a successful payment for the service. A doctor can publish individual slots for service. Doctors can view patients who has booked the appointment along with the payment status. 
+This Project is the backend of Doctors's Portal where a user can register as a patients or doctor.Patient can book an appointment for a service by making a successful payment for the service. A doctor can publish individual slots for service. Doctors can view patients who has booked the appointment along with the payment status.There is an admin role who can delete any doctor or patient profile.Also can change the doctor's profile to verify the doctor credentials.   
 ### Project Features
-* User Account can created.
-* Public (non-authenticated) users can access all cows profile
-* Cow profile can be created.
-* Cow profile can retrived with pagination , searchTerm , name and loacatin.
-* User data can retrived.
-* Order can placed
-* Order data can be retrived.
+* User Account can created using Firebase Authentication.
+* Public (non-authenticated) users can access all services along with number of available spaces. 
+* Doctor profile can be created.
+* Booking appointments (with-authentication).
+* Update slots for publishing to the public access.
+* Make payment for confirming the booking.
+* Delete doctor and patient profile.
+* Update doctor's profile.
 ### Usage
 * Run npm start:dev to start the application.
 * Connect to the API using Postman on port 5009.
-## Live Link: https://assignment3-silk.vercel.app/
+## Live Link:     [www.doctor's-portal-server.com](https://doctors-portal-server-henna-nine.vercel.app/)  
 ### API Endpoints
 | HTTP Verbs | Endpoints | Action |
 | --- | --- | --- |
-| POST | api/v1/auth/signup | To sign up a new user account |
-| GET |api/v1/users/:id | To retrieve Single user |
-| GET |api/v1/users | To retrieve all All users |
-| PATCH | api/v1/users/:id |  To Update Single user |
-| DELETE | api/v1/users/:id | To delete a single user |
-| POST | api/v1/cows |To create a cow profile |
-| GET | api/v1/cows/:id |To retrieve single cow profile |
-| PATCH | api/v1/cows/:id |To update single cow profile |
-| DELETE | api/v1/cows/:id |To delete single cow profile |
-| GET | api/v1/cows |To retrieve all cow profile |
-| GET | api/v1/cows?page=1&limit=10 |To retrieve all cow profile with pagination |
-| GET | api/v1/cows?sortBy=price&sortOrder=asc |To retrieve all cow profile with sorting with price in ascending order|
-| GET | api/v1/cows?sortBy=price&sortOrder=desc |To retrieve all cow profile with sorting with price in descending order|
-| GET | api/v1/cows?sortBy=weight&sortOrder=asc |To retrieve all cow profile with sorting with price in ascending order|
-| GET | api/v1/cows?sortBy=weight&sortOrder=desc |To retrieve all cow profile with sorting with price in descending order|
-| GET | api/v1/cows?location=Chattogram |To retrieve all cow profile match with location|
-| GET | api/v1/cows?name=kalu |To retrieve all cow profile match with name|
-| GET | api/v1/cows?searchTerm=Cha |To retrieve all cow profile match with searchTerm|
-| GET | api/v1/cows?minPrice=20000&maxPrice=70000 |To retrieve all cow profile match with price range|
-| POST | api/v1/orders  |To create a order |
-| GET | api/v1/orders  |To retrieve all orders |
+| GET |api/v1/appointmentOptions | To retrieve all appointment data |
+| GET |api/v1/users?userType={Patient or Doctor} | To retrieve all users based on query (with JWT-authentication)|
+| GET |api/v1/slot/{Doctor's email} | To retrieve all slots of the specific doctor (with JWT-authentication)|
+| GET |api/v1/bookings?email={User's email} | To retrieve all bookings of the specific user (with JWT-authentication)|
+| GET |api/v1/user?email={User's email} | To retrieve all data of the specific user (with JWT-authentication)|
+| GET |api/v1/appointmentSpecialty | To retrieve all services|
+| GET |api/v1/jwt?email={User's email} | To create JWT token|
+| GET |api/v1/booking/:id | To retrieve information of a specific booking (with JWT-authentication)|
+| GET |api/v1/booking-doctor?email={Doctor's Email} | To retrieve all patient of a specific doctor (with JWT-authentication)|
+| POST|api/v1/users | To create a new user account |
+| POST|api/v1/bookings | To create a booking (with JWT-authentication) |
+| POST|api/v1/slots | To create a appointment with slot data (with JWT-authentication) |
+| POST|api/v1/create-payment-intent | To create a new payment intent (with JWT-authentication) |
+| POST|api/v1/payment | To create a payment with payment data  (with JWT-authentication) |
+| PATCH | api/v1/slot |  To Update Slot data (with JWT-authentication)  |
+| PATCH | api/v1/users?id={user id} |  To Update user role (with JWT-authentication)  |
+| PATCH | api/v1/slots |  To Update Slot data (with JWT-authentication)  |
+| DELETE | api/v1/users/:id | To delete a single user (with JWT-authentication)  |
+
 ### Technologies Used
 * [NodeJS](https://nodejs.org/) This is a cross-platform runtime environment built on Chrome's V8 JavaScript engine used in running JavaScript codes on the server. It allows for installation and managing of dependencies and communication with databases.
 * [ExpressJS](https://www.expresjs.org/) This is a NodeJS web application framework.

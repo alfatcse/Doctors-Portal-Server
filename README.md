@@ -39,64 +39,48 @@ This Project is the backend of Doctors's Portal where a user can register as a p
 * [NodeJS](https://nodejs.org/) This is a cross-platform runtime environment built on Chrome's V8 JavaScript engine used in running JavaScript codes on the server. It allows for installation and managing of dependencies and communication with databases.
 * [ExpressJS](https://www.expresjs.org/) This is a NodeJS web application framework.
 * [MongoDB](https://www.mongodb.com/) This is a free open source NOSQL document database with scalability and flexibility. Data are stored in flexible JSON-like documents.
+* [JSON Web Token](https://jwt.io/) JSON Web Token is a proposed Internet standard for creating data with optional signature and/or optional encryption whose payload holds JSON that asserts some number of claims. The tokens are signed either using a private secret or a public/private key.
 * [Mongoose ODM](https://mongoosejs.com/) This makes it easy to write MongoDB validation by providing a straight-forward, schema-based solution to model to application data.
 <hr>
-### Sample Data: (Cow)
+### Sample Data: (User)
 
 ```json
 {
-  "name": "Bella",
-  "age": 4,
-  "price": 5000,
-  "location": "Dhaka",
-  "breed": "Brahman",
-  "weight": 400,
-  "label": "for sale",
-  "category": "Beef",
-  "seller": "ObjectId(609c17fc1281bb001f523456)"
+     "name": "Müller",
+     "email": "müller@gmail.com",
+     "role": "Patient",
+     "image": "https://i.ibb.co/jgntChz/Screenshot-2022-12-14-at-6-27-13-PM.png"
 }
-
 ```
 ### Create a new User 
-
- Route:  /api/v1/auth/signup (POST)
- 
+ Route:  api/v1/users (POST)
  Request body:
- 
  ```json
  {
-  "password":"abrakadabra",
-  "role": "buyer",
-   "name": {
-     "firstName": "Kopa",
-      "lastName": "Samsu"
-   },
-  "phoneNumber":"01711111111",
-  "address": "Chattogram",
-  "budget":30000  // money to buy the cow
-  "income":0 // By Default 0
+  "name": "Müller",
+  "email": "müller@gmail.com",
+  "role": "Patient",
+  "image": "https://i.ibb.co/jgntChz/Screenshot-2022-12-14-at-6-27-13-PM.png"// Image for upload
 }
 ```
- 
  Response: The newly created user object.
- 
  Response Sample Pattern:
-
 ```json
  {
       "success": true, 
       "statusCode":200,
       "message": "Users created successfully",
-      "data": {}, 
-  }
-```
-
-           
+      "data": {
+               "name": "Müller",
+               "email": "müller@gmail.com",
+               "role": "Patient",
+               "image": "https://i.ibb.co/jgntChz/Screenshot-2022-12-14-at-6-27-13-PM.png"
+              }, 
+}
+```        
 ### Get All Users
 
- Route:  /api/v1/users (GET)
- 
- Request body:
+ Route:  api/v1/users?userType={Patient or Doctor} (GET)
  
  Response: The user's array of objects.
  
@@ -129,27 +113,7 @@ Response Sample Pattern:
       "message": "User retrieved successfully",
       "data": {}, 
   }
-  ```
-
-### Update a Single User
-
- Route:  /api/v1/users/:id (PATCH)
- 
- Request Param: :id
- 
- Response: The updated user object.
- 
- Response Sample Pattern:
- 
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "User updated successfully",
-      "data": {}, 
-  }
-  ```
-  
+  ```  
   ### Delete a User
 
  Route:  /api/v1/users/:id ( DELETE)
@@ -169,28 +133,36 @@ Response Sample Pattern:
   }
 ```
 
-### Create a New Cow
+### Create new appointment data
 
- Route:  /api/v1/cows (POST)
+ Route:  api/v1/slots (POST)
 
 Request body:
 
 ```json
  {
-  "name": "Bella",
-  "age": 4,
-  "price": 5000,
-  "location": "Dhaka",
-  "breed": "Brahman",
-  "weight": 400,
-  "label": "for sale",
-  "category": "Beef",
-  "seller": "609c17fc1281bb001f523456"
+    "docEmail": "alfat.cse.21@gmail.com",
+    "docSlot": [
+        {
+            "date": "Saturday, May 27, 2023",
+            "slot": [
+                "12.00 AM-02.00 PM",
+                "03.00 Pm-04.00 PM"
+            ]
+        },
+        {
+            "date": "Friday, May 23, 2023",
+            "slot": [
+                "12.00 AM-02.00 PM",
+                "03.00 Pm-04.00 PM"
+            ]
+        }
+    ]
 }
 
 ```
  
- Response: The newly created cow object.
+ Response: The newly created appointment data.
 
  Response Sample Pattern:
 
@@ -198,255 +170,193 @@ Request body:
  {
       "success": true, 
       "statusCode":200,
-      "message": "Cow created successfully",
+      "message": "Appointment data created successfully",
       "data":  {
-  "name": "Bella",
-  "age": 4,
-  "price": 5000,
-  "location": "Dhaka",
-  "breed": "Brahman",
-  "weight": 400,
-  "label": "for sale",
-  "category": "Beef",
-  "seller": "609c17fc1281bb001f523456"
-}, 
+                 "docEmail": "alfat.cse.21@gmail.com",
+                 "docSlot": [
+                                {
+                                  "date": "Saturday, May 27, 2023",
+                                  "slot": [
+                                            "12.00 AM-02.00 PM",
+                                            "03.00 Pm-04.00 PM"
+                                          ]
+                                },
+                                {
+                                "date": "Friday, May 23, 2023",
+                                "slot": [
+                                          "12.00 AM-02.00 PM",
+                                          "03.00 Pm-04.00 PM"
+                                        ]
+                                }
+                          ]
+            }, 
   }
 ```
            
-### Get All Cows
+### Get all appointment option
 
- Route:  /api/v1/cows (GET)
+ Route: api/v1/appointmentOptions (GET)
 
- Request body:
-
- Response: The cows array of objects.
+ Response: The array of objects.
 
  Response Sample Pattern:
-
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "Cows retrieved successfully",
-      "meta": {
-        "page": 3,
-        "limit": 10,
-        "count":1050
-        }
-      "data": [ {
-  "name": "Bella",
-  "age": 4,
-  "price": 5000,
-  "location": "Dhaka",
-  "breed": "Brahman",
-  "weight": 400,
-  "label": "for sale",
-  "category": "Beef",
-  "seller": "609c17fc1281bb001f523456"
-}] , 
-  }
-  ```
-Route:  /api/v1/cows?
-Query parameters:  (Case Insensitive)
-- page: The page number for pagination (e.g., ?page=1).
-- limit: The number of cow listings per page (e.g., ?limit=10).
-- sortBy: The field to sort the cow listings (e.g., ?sortBy=price).
-- sortOrder : The order of sorting, either 'asc' or 'desc' (e.g., ?sortOrder=asc).
-- minPrice: The minimum price for filtering (e.g., ?minPrice=1000).
-- maxPrice: The maximum price for filtering (e.g., ?maxPrice=5000).
-- location: The location for filtering (e.g., ?location=chattogram).
-- searchTerm: The search query string for searching cows (e.g., ?query=Dhaka). (Search Fields should be location, breed, and category) 
-
-Response: An array of cow listing objects that match the provided filters, limited to the specified page and limit.
-
-Response Sample Pattern:
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "Cows retrieved successfully",
-      "meta": {
-        "page": 3,
-        "limit": 10,
-        }
-      "data": [{
-        "_id": "648d77ca445cd4c1afbe70cb",
-        "name": "Manu",
-        "age": 7,
-        "price": 50000,
-        "location": "Rajshahi",
-        "breed": "Brahman",
-        "weight": 500,
-        "label": "for sale",
-        "category": "Beef",
-        "seller": "648ce0ec4b95c4ff136f6ee6",
-        "createdAt": "2023-06-17T09:07:22.425Z",
-        "updatedAt": "2023-06-17T09:07:22.425Z",
-        "__v": 0,
-        "id": "648d77ca445cd4c1afbe70cb"
-      },
-      {
-        "_id": "648ce1294b95c4ff136f6ee9",
-        "name": "kalu",
-        "age": 7,
-        "price": 60000,
-        "location": "Dhaka",
-        "breed": "Brahman",
-        "weight": 400,
-        "label": "sold out",
-        "category": "Beef",
-        "seller": "648ce0ec4b95c4ff136f6ee6",
-        "createdAt": "2023-06-16T22:24:41.604Z",
-        "updatedAt": "2023-06-16T23:24:01.125Z",
-        "__v": 0,
-        "id": "648ce1294b95c4ff136f6ee9"
-      }], 
-  }
-```
-
-
-### Get a Single Cow
-
-Route:  /api/v1/cows/:id (GET)
-
-Request Param: :id
-
-Response: The specified cow object.
-
-Response Sample Pattern:
-
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "Cow retrieved successfully",
-      "data": {
-        "_id": "648d77ca445cd4c1afbe70cb",
-        "name": "Manu",
-        "age": 7,
-        "price": 50000,
-        "location": "Rajshahi",
-        "breed": "Brahman",
-        "weight": 500,
-        "label": "for sale",
-        "category": "Beef",
-        "seller": "648ce0ec4b95c4ff136f6ee6",
-        "createdAt": "2023-06-17T09:07:22.425Z",
-        "updatedAt": "2023-06-17T09:07:22.425Z",
-        "__v": 0,
-        "id": "648d77ca445cd4c1afbe70cb"
-      }, 
-  }
-```
-
-
-### Update a Single Cow
-
- Route:  /api/v1/cows/:id (PATCH)
- 
- Request Param: :id
- 
- Response: The updated cow object.
-
- Response Sample Pattern:
-
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "Cow updated successfully",
-      "data": {
-        "_id": "648d77ca445cd4c1afbe70cb",
-        "name": "Manu",
-        "age": 7,
-        "price": 50000,
-        "location": "Rajshahi",
-        "breed": "Brahman",
-        "weight": 500,
-        "label": "for sale",
-        "category": "Beef",
-        "seller": "648ce0ec4b95c4ff136f6ee6",
-        "createdAt": "2023-06-17T09:07:22.425Z",
-        "updatedAt": "2023-06-17T09:07:22.425Z",
-        "__v": 0,
-        "id": "648d77ca445cd4c1afbe70cb"
-      },, 
-  }
-
-```  
-### Delete a Cow
-
- Route:  /api/v1/cows/:id ( DELETE)
- 
- Request Param: :id
- 
- Response: The deleted cow object
- 
- Response Sample Pattern:
-
-```json
-  {
-      "success": true, 
-      "statusCode":200,
-      "message": "Cow deleted successfully",
-      "data": {
-        "_id": "648d77ca445cd4c1afbe70cb",
-        "name": "Manu",
-        "age": 7,
-        "price": 50000,
-        "location": "Rajshahi",
-        "breed": "Brahman",
-        "weight": 500,
-        "label": "for sale",
-        "category": "Beef",
-        "seller": "648ce0ec4b95c4ff136f6ee6",
-        "createdAt": "2023-06-17T09:07:22.425Z",
-        "updatedAt": "2023-06-17T09:07:22.425Z",
-        "__v": 0,
-        "id": "648d77ca445cd4c1afbe70cb"
-      } 
-  }
-```     
-
-
-Route:  /api/v1/orders  (POST)
-
-Request body:
 
 ```json
 {
-
-  "cow":"ObjectId(“6473c6a50c56d0d40b9bb6a3)", // cow reference _id
-  "buyer":"ObjectId(“6473c6a50c56d0d40b9bb6a3)", // user reference  _id
+    "status": "Success",
+    "message": "All Service Type Found",
+    "data": [
+        {
+            "_id": "6385cfeef6afce75f83b4fc6",
+            "name": "Teeth Orthodontics"
+        },
+        {
+            "_id": "6385cfeef6afce75f83b4fc7",
+            "name": "Cosmetic Dentistry"
+        },
+        {
+            "_id": "6385cfeef6afce75f83b4fc8",
+            "name": "Teeth Cleaning"
+        },
+        {
+            "_id": "6385cfeef6afce75f83b4fc9",
+            "name": "Cavity Protection"
+        },
+        {
+            "_id": "6385cfeef6afce75f83b4fca",
+            "name": "Pediatric Dental"
+        },
+        {
+            "_id": "6385cfeef6afce75f83b4fcb",
+            "name": "Oral Surgery"
+        }
+    ]
 }
 ```
+Route:  /api/v1/users?
+Query parameters:  (Case Insensitive)
+- page: The page number for pagination (e.g., ?page=1).
+- limit: The number of cow listings per page (e.g., ?limit=10).
+- searchTerm: The search query string for searching users (e.g., ?query=Dhaka). (Search Fields should be name, email, and userType) 
+Response: An array of cow listing objects that match the provided filters, limited to the specified page and limit.
+Response Sample Pattern:
+```json
+  {
+      "success": true, 
+      "statusCode":200,
+      "message": "Users retrieved successfully",
+      "meta": {
+        "page": 3,
+        "limit": 10,
+        },
+      "data": [
+             {
+               "name": "Müller",
+               "email": "müller@gmail.com",
+               "role": "Patient",
+               "image": "https://i.ibb.co/jgntChz/Screenshot-2022-12-14-at-6-27-13-PM.png"
+            }
+        ]
+ }
+```
+### Get a Single Booking
 
-Response: The  newly created order object.
+Route:  /api/v1/booking/:id (GET)
 
-Route:  /api/v1/orders  (GET)
+Request Param: :id
 
-Request body:
-
-Response: The ordered array of objects.
+Response: The specified booking object.
 
 Response Sample Pattern:
 
 ```json
   {
-      "success": true, 
-      "statusCode":200,
-      "message": "Orders retrieved successfully",
-      "data": {
-      "_id": "648cef11d178487e4466e499",
-      "cow": "648ce1294b95c4ff136f6ee9",
-      "buyer": "648c64d2ebc40b277ea6df10",
-      "createdAt": "2023-06-16T23:24:01.207Z",
-      "updatedAt": "2023-06-16T23:24:01.207Z",
-      "__v": 0,
-      "id": "648cef11d178487e4466e499"
-    }, 
-  }
+    "status": "Success",
+    "message": "Bookings Found.",
+    "data": {
+        "_id": "648f6975c2ad6f6721a559d0",
+        "patient_name": "habisdsbiiiöäüü",
+        "patient_id": "63a029b84ccc9fde32696387",
+        "patient_email": "maseattonima@gmail.com",
+        "patient_Phone": 12345,
+        "appointmentData": [
+            {
+                "doctor_email": "kori@gmail.comn",
+                "treatment": "Tooth ",
+                "price": 34,
+                "AppointmentDate": "Monday, January 12,2023",
+                "slot": "10-12",
+                "_id": "648f6975c2ad6f6721a559d1"
+            }
+        ]
+    }
+}
 ```
+
+
+### Post a Booking
+
+ Route: api/v1/bookings (POST)
+ 
+  Request body:
+ ```json
+ {
+  "name": "Müller",
+  "email": "müller@gmail.com",
+  "role": "Patient",
+  "image": "https://i.ibb.co/jgntChz/Screenshot-2022-12-14-at-6-27-13-PM.png"// Image for upload
+}
+```
+ Response Sample Pattern:
+
+```json
+  {
+      "success":  "Success", 
+      "statusCode":200,
+      "message": "Booking Confirmed.Please Check your email", 
+  }
+
+```  
+### Post a Payment Intent 
+ Route:  api/v1/create-payment-intent (POST)
+ Request body:
+ ```json
+ {
+  "price": 100,
+}
+```
+ Response:Payment intent created
+ 
+ Response Sample Pattern:
+
+```json
+{
+    "status": "Success",
+    "message": "Payment Intent Created",
+    "clientSecret": Client Secret
+}
+```
+### Post a Payment Information
+ Route:  api/v1/payment (POST)
+ Request body:
+ ```json
+{
+        "price":1442,
+        "transactionid": Trasaction ID,
+        "bookingID": 23784546756625,
+        "email":"alfaddst@g.com"
+}
+```
+ Response:Payment intent created
+ 
+ Response Sample Pattern:
+
+```json
+{
+    "status": "Success",
+    "message": "Payment Data Posted",
+}
+```   
 ### Error Handling:
 Error Response Object include the following properties:
 - success  →  false
@@ -469,37 +379,3 @@ Error Response Object include the following properties:
     "stack": "MongoServerError: E11000 duplicate key error collection: univerity-management.students index: email_1 dup key: { email: \"user2@gmail.com\" }\n    at H:\\next-level-development\\university-management-auth-service\\node_modules\\mongodb\\src\\operations\\insert.ts:85:25\n    at H:\\next-level-development\\university-management-auth-service\\node_modules\\mongodb\\src\\cmap\\connection_pool.ts:574:11\n    at H:\\next-level-development\\university-writeOrBuffer (node:internal/streams/writable:391:12)"
 }
 ```
- 
-  ### Application Routes:
-
-   #### User
-   - api/v1/auth/signup (POST)
-   - api/v1/users (GET)
-   - api/v1/users/6177a5b87d32123f08d2f5d4 (Single GET) Include an id that is saved in your database
-   - api/v1/users/6177a5b87d32123f08d2f5d4 (PATCH)
-   - api/v1/users/6177a5b87d32123f08d2f5d4 (DELETE) Include an id that is saved in your database
-
-
-   #### Cows
-   - api/v1/cows (POST)
-   - api/v1/cows (GET)
-   - api/v1/cows/6177a5b87d32123f08d2f5d4 (Single GET) Include an id that is saved in your database
-   - api/v1/cows/6177a5b87d32123f08d2f5d4 (PATCH)
-   - api/v1/cows/6177a5b87d32123f08d2f5d4 (DELETE) Include an id that is saved in your database
-
-   ### Pagination and Filtering routes of Cows
-
-   - api/v1/cows?pag=1&limit=10
-   - api/v1/cows?sortBy=price&sortOrder=asc
-   - api/v1/cows?minPrice=20000&maxPrice=70000
-   - api/v1/cows?location=Chattogram
-   - api/v1/cows?searchTerm=Cha
-     
-  
-   #### Orders
-   - api/v1/orders (POST)
-   - api/v1/orders (GET)
-
-
-
-

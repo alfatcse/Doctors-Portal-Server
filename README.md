@@ -1,7 +1,6 @@
-# Project Support
 ### Introduction
-Project is the backend of cow online shop for Eid-Ul-Adha. This project allows user to create,delete,update and retrive user data.Also create,delete,update and retrive cow profile data. This also support post and get order data.
-### Project Support Features
+This Project is the backend of Doctors's Portal where a user can register as a patients or doctor.Patient can book an appointment for a service by making a successful payment for the service. A doctor can publish individual slots for service. Doctors can view patients who has booked the appointment along with the payment status. 
+### Project Features
 * User Account can created.
 * Public (non-authenticated) users can access all cows profile
 * Cow profile can be created.

@@ -6,6 +6,7 @@ exports.CreateBooking = async (data) => {
     return booking;
   }
 };
+//database update
 exports.CheckBooking = async (data) => {
   const patient = await Booking.findOne({ patient_id: data.patient_id });
   let hasBooing = false;
